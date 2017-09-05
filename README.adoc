@@ -7,17 +7,6 @@
 
 Use it to unit-test link:https://appery.io[Appery.io] server code functions.
 
-++++
-<style>
-.greentag {
-    color: #66993a;
-    background-color: #ccf7a7;
-    padding: 5px 20px 5px 20px;
-    cursor: pointer;
-}
-</style>
-++++
-
 Download::
   link:https://www.dropbox.com/s/22qbm6cbxmp514u/apperyunit-0.98.zip?dl=0[apperyunit-0.98.zip] (7.5M)
 
