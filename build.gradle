@@ -1,0 +1,31 @@
+apply plugin: 'groovy'
+
+sourceCompatibility = '1.7'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'io.appery.apperyunit.au'
+}
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    baseName = 'apperyunit'
+    //version = 0.9
+
+    manifest { 
+        attributes "Main-Class": "io.appery.apperyunit.au"
+    }  
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }  
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.12'
+    compile 'org.apache.httpcomponents:httpclient:4.5.3'
+    //compile 'com.google.code.gson:gson:2.8.0' 
+}
