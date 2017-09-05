@@ -82,9 +82,9 @@ Example:
 ====
 ```json
 {
-  "my_script_1": <!--1-->
+  "my_script_1": <1>
      ["my_library_2", "my_library_3"],
-  "my_library_2": <!--2-->
+  "my_library_2": <2>
      ["my_library_4"]
 ```
 ====
