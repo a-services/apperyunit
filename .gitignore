@@ -1,3 +1,6 @@
 README.html
-
 **/.DS_Store
+.gradle
+
+/.nb-gradle/
+/build/

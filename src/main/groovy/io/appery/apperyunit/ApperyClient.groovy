@@ -131,7 +131,7 @@ public class ApperyClient {
             f.text = details.sourceCode;
             console "Script saved: ${bold}${scriptName}.js${norm}"
             //saveDependencies(script)
-            saveJsonDependencies()
+            updateJsonDependencies(script)
         }
     }
 
@@ -439,19 +439,23 @@ public class ApperyClient {
         return new ArrayList(dt.result)
     }
 
-    void updateJsonDependencies() {
-        for (def script in scripts) {
-            List depNames = []
-            script.dependencies.each { depGuid ->
-                def dep = scripts.find { it.guid==depGuid }
-                depNames.add(dep.name)
-            }
-            if (depNames.size()>0) {
-                jsonDeps.put(script.name, depNames)
-            } else {
-                jsonDeps.remove(script.name);
-            }
+    /**
+     * Fill `jsonDeps` structure with data from `scripts` list.
+     */
+    void updateJsonDependencies(script) {
+        //for (def script in scripts) {
+        List depNames = []
+        script.dependencies.each { depGuid ->
+            def dep = scripts.find { it.guid==depGuid }
+            depNames.add(dep.name)
+            downloadScript(dep)
         }
+        if (depNames.size()>0) {
+            jsonDeps.put(script.name, depNames)
+        } else {
+            jsonDeps.remove(script.name);
+        }
+        //}
     }
     
     void saveJsonDependencies() {
@@ -679,6 +683,10 @@ public class ApperyClient {
         } else {
             e.printStackTrace();
         }
+    }
+    
+    void ensureFixturesFolder() {
+        ensureFolder(fixturesFolder)
     }
     
     void buttonRun() {

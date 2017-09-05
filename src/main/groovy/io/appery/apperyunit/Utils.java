@@ -15,7 +15,7 @@ class Utils {
      * App version number. If different from the number defined in `ApperyUnit` DB,
      * then GUI will suggest to upgrade.
      */
-    public static String apperyUnitVersion = "0.98";
+    public static String apperyUnitVersion = "0.99";
 
     /**
      * Folder name related to current folder where we'll look for 

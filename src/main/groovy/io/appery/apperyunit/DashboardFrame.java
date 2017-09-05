@@ -32,6 +32,7 @@ public class DashboardFrame extends javax.swing.JFrame {
         apperyClient.loadScriptList();
         apperyClient.loadFolders();
         apperyClient.loadJsonDependencies();
+        apperyClient.ensureFixturesFolder();
         //depsPanel.setLayout(new GridLayout(0, 1));
         depsScroll.setPreferredSize(new Dimension(200,200));
         depsPanel.setLayout(new BoxLayout(depsPanel, BoxLayout.Y_AXIS));

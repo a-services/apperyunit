@@ -1,17 +1,9 @@
 /** 
-= Emulate Appery Server Code call 
-
-[cols="1,5", options="header"]
-|===
-| Date        | Path
-|  1 Mar 2017 | /Users/eabramovich/Documents/RECENT/apperyunit/apperyunit/
-| 11 Jan 2017 | /Users/eabramovich/Documents/2015/15-11/dyjet/KnowYE_ServerCode/apperyunit/src/main/groovy/apperyunit.groovy
-| 15 Dec 2016 | /Users/eabramovich/Documents/16-04/Tak/ServerCode_Tak/apperyunit/src/main/groovy/apperyunit.groovy
-|  6 Dec 2016 | /Users/eabramovich/Documents/RECENT/Jobster/Jobster_Server/apperyunit/src/main/groovy/apperyunit.groovy
-| 25 Nov 2016 | C:\doc\recent\Jobster\Jobster_Server\apperyunit.groovy
-| 24 Nov 2016 | /home/egor/prog/appery/Jobster/Jobster_Server/apperyunit/src/main/groovy/apperyunit.groovy
-|===
-*/
+ * Emulate Appery Server Code call.
+ * 
+ * Calling classes: 
+ *   `au` -> `DashboardFrame` -> `ApperyClient` -> `PasswordDialog`
+ */
 
 package io.appery.apperyunit
 
@@ -21,45 +13,22 @@ import static io.appery.apperyunit.Utils.*
 import javax.script.ScriptException
 
 def asArray(resp) {
-	List result = []
-	int n = resp.size()
-	for (i=0; i<n; i++) {
-	    def obj = resp[i as String]
-	    assert obj!=null
-	    result.add(obj)
-	}
-	return result
-}
-
-/*
-void downloadScriptsConsole() {
-    String configFileName = 'apperyunit.json'
-    File f = new File()
-    if (!f.exists(configFileName)) {
-        println "Configuration file not found: " + configFileName
-        return
+    List result = []
+    int n = resp.size()
+    for (i=0; i<n; i++) {
+        def obj = resp[i as String]
+        assert obj!=null
+        result.add(obj)
     }
-    def jsonSlurper = new JsonSlurper()
-    def config = jsonSlurper.parseText(f.text)
-
-    assert config.username!=null
-    assert config.password!=null
-    assert config.scripts!=null
-    assert config.scripts.size()>0
-
-    new ApperyClient().downloadScriptsConsole(config.username, config.password, config.scripts)
+    return result
 }
-*/
 
 // --------- main ---------
 
 println '-'*80
 println new Date().toString().padLeft(80)
 
-//debug_mode = System.getenv("AU_DEBUG")=='1'
 if (args.size()==0) {
-    // println "Parameters: (color)? (download)? script_name.js (param_list.paramlist)? (params_name.params)? (echo)? (test)? "
-    // au -> DashboardFrame -> ApperyClient -> PasswordDialog
     DashboardFrame.main([] as String[])
     return
 }
@@ -69,14 +38,6 @@ ensureFolder(paramsFolder)
 
 cl = new CommandLine(args)
 colorMode = cl.extractColorMode()
-
-/*
-downloadMode = cl.extractDownloadMode()
-if (downloadMode) {
-    downloadScriptsConsole()
-    return
-}
-*/
 
 scriptName = cl.extractScriptName()
 
@@ -96,12 +57,7 @@ if (paramName!=null && paramList!=null) {
     println "No need to specify `.params` file when `.paramlist` is specified"
     return
 }
-/*
-if (paramName==null && paramList==null) {
-    println "You should specify `.params` or `.paramlist` file"
-    return
-}
-*/
+
 if (paramList==null) {
     paramList = [paramName] 
 }
