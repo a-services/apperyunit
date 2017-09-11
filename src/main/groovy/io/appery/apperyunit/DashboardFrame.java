@@ -10,7 +10,9 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.text.DefaultCaret;
 import javax.swing.tree.TreeSelectionModel;
 
-
+/**
+ * Main application frame.
+ */
 public class DashboardFrame extends javax.swing.JFrame {
 
     ApperyClient apperyClient = new ApperyClient(); 

@@ -29,3 +29,31 @@ dependencies {
     compile 'org.apache.httpcomponents:httpclient:4.5.3'
     //compile 'com.google.code.gson:gson:2.8.0' 
 }
+
+/* Asciidoclet links:
+ *   http://mrhaki.blogspot.com/2015/10/awesome-asciidoctor-using-asciidoctor.html
+ *   https://github.com/asciidoctor/asciidoclet
+ *   http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javadoc.html
+ *   https://docs.gradle.org/current/javadoc/org/gradle/external/javadoc/StandardJavadocDocletOptions.html
+ */
+
+configurations {
+    asciidoclet
+}
+
+dependencies {
+    asciidoclet 'org.asciidoctor:asciidoclet:1.+'
+}
+
+javadoc {
+    options.docletpath = configurations.asciidoclet.files.asType(List)
+    options.doclet = 'org.asciidoctor.Asciidoclet'
+    options.overview = "src/main/groovy/overview.adoc"
+    options.links = [
+        'http://docs.oracle.com/javase/8/docs/api/',
+        'https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/'
+    ]
+    options.noQualifiers = ['java.lang', 'java.util']
+    options.memberLevel = JavadocMemberLevel.PACKAGE
+    options.addStringOption "-base-dir", "${projectDir}" 
+}

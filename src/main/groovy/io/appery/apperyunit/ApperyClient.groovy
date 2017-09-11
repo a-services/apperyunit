@@ -24,24 +24,10 @@ import org.apache.http.conn.ssl.*
 
 import javax.script.ScriptException
 
-/** 
- * HttpClient API::
- *   https://hc.apache.org/httpcomponents-client-ga/httpclient/apidocs/index.html
- */
-public class ApperyClient {
 
-    static String host = 'appery.io'
-    
-    CloseableHttpClient httpclient = HttpClients.createDefault();
-    
-    String userName;
-    
-    //String sessionToken;
-    //public boolean sessionTokenExpired;
-    
+public class ApperyClient extends ApperyRestClient {
+
     JsonSlurper jsonSlurper = new JsonSlurper()
-    List scripts;
-    List folders;
     
     Map jsonDeps = [:];
     
@@ -55,24 +41,11 @@ public class ApperyClient {
         this.dashboardFrame = dashboardFrame
         console_area = dashboardFrame.consoleArea
         openPasswordDialog();
-        /*
-        if (!debug_mode) {
-            openPasswordDialog();
-        } else {
-        */
-        /*
-        if (!reloadSessionToken()) {
-            openPasswordDialog();
-        } else { 
-            loadFolders();
-            if (sessionTokenExpired) {
-                openPasswordDialog();
-            } else {
-                dashboardFrame.createDashboard();
-            }
-        }*/
     }
     
+    /**
+     * We need password to set cookies in HttpClient.
+     */
     void openPasswordDialog() {
         PasswordDialog dialog = new PasswordDialog(dashboardFrame, true);
         dialog.setApperyClient(this);
@@ -89,29 +62,7 @@ public class ApperyClient {
         dialog.setVisible(true);
     }
     
-    /*
-    void downloadScriptsConsole(String username, String password, List scripts) {
-        try {
-            userName = username
-            if (!reloadSessionToken()) {
-                obtainSessionToken(username, password)
-            }
-            loadScriptList()
-            if (sessionTokenExpired) {
-                obtainSessionToken(username, password)
-                loadScriptList()
-            }
-            scripts.each {
-                downloadScript(it, true)
-            }
-
-        } finally {
-            httpclient.close()
-        }
-    }
-    */
-   
-    void downloadScript(script) {
+    void downloadScript(ScriptJson script) {
         //def script = scripts.find { it.name==scriptName }
         if (script==null) {
             console "${red}[WARN]${norm} Script not found: ${red}${scriptName}${norm}"    
@@ -135,44 +86,6 @@ public class ApperyClient {
         }
     }
 
-    /*    
-    boolean reloadSessionToken() {
-        ensureFolder(fixturesFolder)
-        File file = new File(fixturesFolder, '.token')
-        boolean refresh = false
-        String[] lines
-        if (!file.exists()) {
-            refresh = true
-        } else {
-            lines = file.text.split('\n')
-            if (lines.size()!=2) {
-                refresh = true
-            } else {
-                userName = lines[0]
-                if (new Date().getTime() - file.lastModified() > 15*60*1000) {
-                    refresh = true
-                }
-            }
-        }
-        
-        //println "userName: $userName"
-        
-        if (!refresh) {
-            sessionToken = lines[1]
-            println "Session token restored" //: $sessionToken"
-        } 
-        return !refresh
-    }
-    
-    void obtainSessionToken(String username, String password) {
-        SecurityTokenProvider stp = new SecurityTokenProvider(host, username, password)
-        sessionToken = stp.getToken("app")
-        println "Session token received" //: $sessionToken"
-        ensureFolder(fixturesFolder)
-        new File(fixturesFolder, '.token').text = username + '\n' + sessionToken 
-    }
-    */
-   
     String addGetParams(String url, Map parameters) {
         URL u = new URL(url)
         URIBuilder uriBuilder = new URIBuilder()
@@ -190,7 +103,7 @@ public class ApperyClient {
         String loginUrl = "https://idp." + host + "/idp/doLogin";
         loginUrl = addGetParams(loginUrl, [ "cn":username, "pwd":password, "target":target ])
         HttpGet request = new HttpGet(loginUrl);
-        def response = httpclient.execute(request, new LocalResponseHandler());
+        def response = httpclient.execute(request, new HttpResponseHandler());
         
         String htmlText = response.body
         String samlKey = getSAMLDocumentFromPage(htmlText)
@@ -206,7 +119,7 @@ public class ApperyClient {
         ArrayList postParameters = new ArrayList<NameValuePair>();
         postParameters.add(new BasicNameValuePair("SAMLResponse", samlKey));
         samlRequest.setEntity(new UrlEncodedFormEntity(postParameters, "UTF-8"));
-        response = httpclient.execute(samlRequest, new LocalResponseHandler());
+        response = httpclient.execute(samlRequest, new HttpResponseHandler());
         
         return true
     }
@@ -231,89 +144,8 @@ public class ApperyClient {
         return null;
     }
     
-    /**
-     * Wrapper object returned by HttpClient.
-     */
-    class HttpResultObj {
-        public String   body = "";
-        public Integer  status = 0;
-        
-        public HttpResultObj() {}
-        
-        public HttpResultObj(Integer status, String body) {
-            this.status = status;
-            this.body = body;
-        }
-        
-        public HttpResultObj(HttpResponse resp){
-            this.status = resp.getStatusLine().getStatusCode();
-        }
-    }
 
-    /**
-     * ResponseHandler for HttpClient. 
-     */
-    class LocalResponseHandler implements ResponseHandler<HttpResultObj> {
     
-        @Override
-        public HttpResultObj handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-            HttpResultObj resp = new HttpResultObj(response);
-            try {
-                resp.body = dump(response);
-                if (response.getStatusLine().getStatusCode() == 302){
-                    //resp.body = dump(response);
-                    resp.body = response.getLastHeader("Location").getValue();
-                } else {
-                    Header xApperyStatusHdr = response.getLastHeader("X-Appery-Status"); 
-                    String xApperyStatus = (xApperyStatusHdr != null)? 
-                                            xApperyStatusHdr.getValue() : null;        
-                    if ( "403".equals(xApperyStatus) ){
-                        resp.status = 403;
-                    }
-                    //resp.body = dump(response);
-                }
-            } catch (Exception ex){
-                println "Handler Exception: " + ex.getMessage();
-            }
-            
-            return resp;
-        }   
-
-        String dump(HttpResponse response) throws Exception {
-            //println("-----------");
-            //dumpHeader(response);
-            String body = "";
-            if (response.getStatusLine().getStatusCode() < 300) {
-                try {
-                    BasicResponseHandler brh = new BasicResponseHandler();
-                    body = brh.handleResponse(response);
-                    //println(body);
-                } catch (Exception ex) {
-                    println("Dump Exception: " + ex.getLocalizedMessage());
-                }
-            }
-            return body;
-        }
-    }
-    
-    String makeGet(String serviceUrl) {
-        HttpGet req = new HttpGet("https://" + host + serviceUrl);
-        req.addHeader(new BasicHeader("Accept", "application/json"));
-        //req.addHeader(new BasicHeader("Session-Token", sessionToken));
-        req.addHeader(new BasicHeader("User-Agent", "My-Test-Agent"));
-        HttpResponse  response = httpclient.execute(req);
-        String result = ""
-        try {
-            int status = response.getStatusLine().getStatusCode();
-            assert status==200
-            result = EntityUtils.toString(response.getEntity());
-            //sessionTokenExpired = result.startsWith('<HTML>')
-        } finally {
-            response.close()
-        }
-        return result
-    }
-   
     void loadScriptList() {
         String body = makeGet('/bksrv/rest/1/code/admin/script/?light=true')
         //if (!sessionTokenExpired) {
@@ -442,13 +274,13 @@ public class ApperyClient {
     /**
      * Fill `jsonDeps` structure with data from `scripts` list.
      */
-    void updateJsonDependencies(script) {
+    void updateJsonDependencies(ScriptJson script) {
         //for (def script in scripts) {
         List depNames = []
         script.dependencies.each { depGuid ->
             def dep = scripts.find { it.guid==depGuid }
             depNames.add(dep.name)
-            downloadScript(dep)
+            downloadScript(dep as ScriptJson)
         }
         if (depNames.size()>0) {
             jsonDeps.put(script.name, depNames)
@@ -502,26 +334,6 @@ public class ApperyClient {
             }
         }
         
-    }
-
-    /** 
-     * User object for `scriptTree`
-     */
-    class ScriptNode {
-    
-        boolean isRoot;
-        boolean isScript;
-        boolean isDownloaded;
-        String name;
-        def data;
-
-        ScriptNode(String name) {
-            this.name = name    
-        }
-        
-        public String toString() {
-            return name;
-        }
     }
     
     DefaultTreeModel buildTree() {
@@ -649,13 +461,13 @@ public class ApperyClient {
             markAsNotDownloaded(scripts)
             
             if (curObj.isScript) {
-                downloadScript(curObj.data)
+                downloadScript(curObj.data as ScriptJson)
                 dashboardFrame.runButton.setEnabled(true)
             } else 
             if (curObj.isRoot) {
                 console "--- Downloading all scripts ---"
                 for (int i=0; i<scripts.size(); i++) {
-                    downloadScript(scripts[i])
+                    downloadScript(scripts[i] as ScriptJson)
                     console "Script saved: ${bold}${scripts[i].name}.js${norm}"
                 }
             } else {
@@ -663,7 +475,7 @@ public class ApperyClient {
                 List subscripts = findAllScripts(curObj.data._id)
                 console "--- Downloading ${subscripts.size()} scripts from `${curObj.name}` folder ---" 
                 for (def script in subscripts) {
-                    downloadScript(script)
+                    downloadScript(script as ScriptJson)
                 }
                 console "--- Done ---"
             }

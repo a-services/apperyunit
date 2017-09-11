@@ -1,0 +1,6 @@
+Emulate Appery.io server-code calls.
+
+Calling classes:
+   `au` -> `DashboardFrame` -> `ApperyClient` -> `PasswordDialog`
+
+Usage: http://apperyunit.app.appery.io
