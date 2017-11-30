@@ -515,7 +515,8 @@ public class ApperyClient extends ApperyRestClient {
         ServerCode sc = new ServerCode()
         try {
             String scriptName = curObj.name
-            sc.dependencyList scriptName + '.dependencies'
+            //sc.dependencyList scriptName + '.dependencies'
+            sc.addDependencies(scriptName)
 
             console ""
             console "Script name: $scriptName"
