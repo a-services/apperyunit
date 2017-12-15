@@ -23,6 +23,9 @@ class ServerCode {
     
     String sourceFile = 'source.js'
     
+    /**
+     * Run servercode file with given parameters
+     */
     void run(String jsFile, String jsonParams) {
         this.jsFile = jsFile
         jsEngine = new ScriptEngineManager().getEngineByName("JavaScript")
@@ -35,7 +38,7 @@ class ServerCode {
         
         String[] params = extractBody(jsonParams)
         /*
-        println "---- extractBody: ----"
+        println "...Printing params"
         for (p in params) {
             println p
             println '....'
@@ -45,6 +48,7 @@ class ServerCode {
         console " $bold Params:$norm $Apperyio_requestParams"
         
         /*
+        println "...Printing headers"
         String Apperyio_headers = '{}'
         if (params.size()>1 && params[1]!=null) {
         	Apperyio_headers = params[1]
@@ -57,6 +61,8 @@ class ServerCode {
             console " $bold Body:$norm $Apperyio_body"
         }
         console '.'*80
+
+        // Template for JavaScript stub
         String jsHeader = """
             var Apperyio_requestParams = $Apperyio_requestParams;
             var Apperyio_body = '$Apperyio_body';

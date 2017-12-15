@@ -13,7 +13,6 @@ repositories {
 
 jar {
     baseName = 'apperyunit'
-    //version = 0.9
 
     manifest { 
         attributes "Main-Class": "io.appery.apperyunit.au"
@@ -25,7 +24,7 @@ jar {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.12'
+    compile 'org.codehaus.groovy:groovy-all:2.4.13'
     compile 'org.apache.httpcomponents:httpclient:4.5.3'
     //compile 'com.google.code.gson:gson:2.8.0' 
 }
@@ -56,4 +55,39 @@ javadoc {
     options.noQualifiers = ['java.lang', 'java.util']
     options.memberLevel = JavadocMemberLevel.PACKAGE
     options.addStringOption "-base-dir", "${projectDir}" 
+}
+
+/*
+task zip(type: Zip) {
+    version = 0.99
+    from 'build/libs/'
+    into("apperyunit-0.99") {
+        include 'apperyunit.jar'
+    }
+    destinationDir(file('build'))
+}
+*/
+
+task zip {
+    version = 0.99
+    ant.delete(dir: "build/distr")
+    ant.copy(todir: "build/distr/apperyunit-${version}") {
+        fileset(dir: "build/libs") {
+            include(name: "apperyunit.jar")
+        }
+        fileset(dir: ".") {
+            include(name: "README.html")
+            include(name: "au.bat")
+            include(name: "au.sh")
+            include(name: "dependencies.json")
+            include(name: "helloappery.js")
+            include(name: "helloappery_lib.js")
+            include(name: "license.txt")
+            include(name: "images/*.*")
+            include(name: "parameters/*.*")
+        }
+    }
+    ant.zip(destfile: "build/apperyunit-${version}.zip") {
+        fileset(dir: "build/distr") 
+    }
 }

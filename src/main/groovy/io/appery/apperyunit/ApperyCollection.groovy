@@ -218,6 +218,7 @@ class ApperyCollection {
         Map traceJSON = [
                 "operation": "distinct", 
                 "collection": collectionName,
+                "column": columnName,
                 "params": params
         ]
         String traceJson = JsonOutput.prettyPrint(JsonOutput.toJson(traceJSON))
@@ -279,7 +280,7 @@ class ApperyCollection {
         Map traceJSON = [
                 "operation": "createObject", 
                 "collection": fu(collectionName),
-                "options": jsonSlurper.parseText(objectJSONstr) 
+                "objectJSON": jsonSlurper.parseText(objectJSONstr) 
         ]
         String traceJson = JsonOutput.prettyPrint(JsonOutput.toJson(traceJSON))
         if (testMode) {
@@ -316,7 +317,7 @@ class ApperyCollection {
                 "operation": "updateObject", 
                 "collection": fu(collectionName),
                 "objectId": fu(objectId),
-                "options": jsonSlurper.parseText(objectJSONstr)  //deepMap(objectJSON)
+                "objectJSON": jsonSlurper.parseText(objectJSONstr)  //deepMap(objectJSON)
         ]
         String traceJson = JsonOutput.prettyPrint(JsonOutput.toJson(updateJSON))
         if (testMode) {
@@ -423,7 +424,7 @@ class ApperyCollection {
         Map objectJSON = [
             "operation": "multiDeleteObject", 
             "collectionName": fu(collectionName),
-            "queryString": fu(queryString) 
+            "query": fu(queryString) 
         ]
         String traceJson = JsonOutput.prettyPrint(JsonOutput.toJson(objectJSON))
         if (testMode) {
@@ -662,9 +663,9 @@ class ApperyCollection {
         String pname = queryParamFileName()
         Map traceObj = [
             "operation": "retrieveObject", 
-            "collectionName": fu(collectionName),
-            "include": fu(include),
-            "objectId": fu(objectId)
+            "collection": fu(collectionName),
+            "objectId": fu(objectId),
+            "include": fu(include)
             //"proj": proj 
         ]
         String traceJson = JsonOutput.prettyPrint(JsonOutput.toJson(traceObj))

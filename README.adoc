@@ -8,7 +8,10 @@
 Use it to unit-test link:https://appery.io[Appery.io] server code functions.
 
 Download::
-  link:https://www.dropbox.com/s/22qbm6cbxmp514u/apperyunit-0.98.zip?dl=0[apperyunit-0.98.zip] (7.5M)
+  icon:download[] {nbsp} link:distr/apperyunit-0.99.zip?dl=0[apperyunit-0.99.zip] {nbsp}(7.5M)
+
+Source::
+  icon:github[] {nbsp} https://github.com/a-services/apperyunit
 
 toc::[]
 
