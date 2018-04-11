@@ -145,6 +145,10 @@ class ApperyCollection {
         return "update_r_${updateCount}.json"
     }
 
+    String updateFileName() {
+        return "update_${updateCount}.json"
+    }
+
     String queryParamFileName() {
         return "query_r_${queryCount}.json"
     }
@@ -633,15 +637,21 @@ class ApperyCollection {
 
         } else
         if (method=='POST') {        
-            String fname = nextUpdateParamFileName()
+            String pname = nextUpdateParamFileName()
+            String fname = updateFileName()
             if (testMode) {
-                assertEquals(traceJson, fname)
+                assertEquals(traceJson, pname)
             } else {
-                console "Saving request to $ital`$fname`$norm"
-                new File(outFolder, fname).text = traceJson
+                console "Saving request to $ital`$pname`$norm"
+                new File(outFolder, pname).text = traceJson
             }
             status = 200
-            respBody = '{ "success":true }'
+            File respFile = new File(outFolder, fname)
+            if (respFile.exists()) {
+                respBody = respFile.text
+            } else {
+                respBody = '{ "success":true }'
+            }
             /*
             HttpPost httpPost = new HttpPost(uriBuilder.build());
             httpPost.addHeader("Content-Type", "application/json")

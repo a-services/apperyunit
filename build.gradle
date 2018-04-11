@@ -69,7 +69,7 @@ task zip(type: Zip) {
 */
 
 task zip {
-    version = 0.99
+    version = 1.00
     ant.delete(dir: "build/distr")
     ant.copy(todir: "build/distr/apperyunit-${version}") {
         fileset(dir: "build/libs") {
