@@ -1,16 +1,14 @@
 # Run ApperyUnit
 
-AU="java -cp build/libs/apperyunit.jar io.appery.apperyunit.au"
+AU="java -cp apperyunit-1.00.jar io.appery.apperyunit.au"
 
 case "$1" in
-	"r" ) $AU helloappery.js
-		;;
 	"e" ) $AU helloappery.js echo
 		;;
 	"t" ) $AU helloappery.js test
 		;;
-	"d" ) $AU download
+	"w" ) $AU
 		;;
-	* ) $AU 
+	* ) $AU helloappery.js 
 		;;
 esac	

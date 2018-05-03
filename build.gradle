@@ -73,7 +73,7 @@ task zip {
     ant.delete(dir: "build/distr")
     ant.copy(todir: "build/distr/apperyunit-${version}") {
         fileset(dir: "build/libs") {
-            include(name: "apperyunit.jar")
+            include(name: "apperyunit-${version}.jar")
         }
         fileset(dir: ".") {
             include(name: "README.html")

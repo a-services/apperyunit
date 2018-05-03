@@ -124,6 +124,8 @@ class ApperyCollection {
         String fname = queryFileName()
         console "Saving result to $ital`$fname`$norm"
         new File(outFolder, fname).text = respJson
+        
+        sleep(500); // keep number of requests per second reasonable 
         return respJson
     }
     

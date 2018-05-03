@@ -1,10 +1,5 @@
 @echo off
-set AU=java -cp ../apperyunit/build/libs/apperyunit-0.9.jar io.appery.apperyunit.au
-
-if "%1%"=="r" (
-	%AU% helloappery.js
-	goto end
-) 
+set AU=java -cp apperyunit-1.00.jar io.appery.apperyunit.au
 
 if "%1%"=="e" (
 	%AU% helloappery.js echo 
@@ -16,11 +11,11 @@ if "%1%"=="t" (
 	goto end
 ) 
 
-if "%1%"=="d" (
-	%AU% download
+if "%1%"=="w" (
+	%AU% 
 	goto end
 ) 
 
-%AU% 
+%AU% helloappery.js
 
 :end
