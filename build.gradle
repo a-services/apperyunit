@@ -12,7 +12,7 @@ repositories {
 }
 
 jar {
-    baseName = 'apperyunit'
+    baseName = 'apperyunit-1.00'
 
     manifest { 
         attributes "Main-Class": "io.appery.apperyunit.au"
@@ -68,6 +68,7 @@ task zip(type: Zip) {
 }
 */
 
+/*
 task zip {
     version = 1.00
     ant.delete(dir: "build/distr")
@@ -91,3 +92,4 @@ task zip {
         fileset(dir: "build/distr") 
     }
 }
+*/
