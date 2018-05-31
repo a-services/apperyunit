@@ -31,8 +31,11 @@ class BatchRunner extends SwingWorker<Void, String> {
     
     @Override
     protected void process(List<String> msgs) {
-        String msg = msgs.get(msgs.size()-1);
-        console_area.append(msg + '\n');
+    	StringBuffer sb = new StringBuffer();
+        for (String msg: msgs) {
+            sb.append(msg + '\n');
+        }
+        console_area.append(sb.toString());
     }
     
     public void print(String msg) {
