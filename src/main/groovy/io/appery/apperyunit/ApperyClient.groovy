@@ -24,12 +24,17 @@ import org.apache.http.conn.ssl.*
 
 import javax.script.ScriptException
 
-
+/**
+ * Provides methods to execute when buttons on `DashboardFrame` are called.
+ */
 public class ApperyClient extends ApperyRestClient {
 
     JsonSlurper jsonSlurper = new JsonSlurper()
     
-    Map jsonDeps = [:];
+    /**
+     * Maps script name to the list of dependencies.
+     */
+    Map<String,List<String>> jsonDeps = [:];
     
     ScriptNode curObj;
     DashboardFrame dashboardFrame;
@@ -62,6 +67,9 @@ public class ApperyClient extends ApperyRestClient {
         dialog.setVisible(true);
     }
     
+    /**
+     * Download server code script from Appery.
+     */
     void downloadScript(ScriptJson script) {
         //def script = scripts.find { it.name==scriptName }
         if (script==null) {
@@ -290,6 +298,9 @@ public class ApperyClient extends ApperyRestClient {
         //}
     }
     
+    /**
+     * Rewrite `dependencies.json` file.
+     */
     void saveJsonDependencies() {
         new File('dependencies.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonDeps))
     }
@@ -435,6 +446,7 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Instead of running `downloadProcess()` directly on click, 
      * we delegate it to `BatchRunner`  that implements `SwingWorker`.
+     * @see #downloadProcess()
      */
     void buttonDownload() {
         BatchRunner batchRunner = new BatchRunner()

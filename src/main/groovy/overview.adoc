@@ -5,7 +5,12 @@ Usage: http://apperyunit.app.appery.io
 == Calling classes:
 
 GUI::   
-`au` -> `DashboardFrame` -> `ApperyClient` -> `PasswordDialog`
+link:../groovydoc/io/appery/apperyunit/au.html[au] -> 
+`DashboardFrame` -> 
+link:../groovydoc/io/appery/apperyunit/ApperyClient.html[ApperyClient] -> 
+`PasswordDialog`
 
 Console::
-`au` -> `ServerCode` -> `ApperyCollection`
+link:../groovydoc/io/appery/apperyunit/au.html[au] -> 
+link:../groovydoc/io/appery/apperyunit/ServerCode.html[ServerCode] -> 
+link:../groovydoc/io/appery/apperyunit/ApperyCollection.html[ApperyCollection]

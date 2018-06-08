@@ -279,6 +279,9 @@ class ServerCode {
         return (resp!=null)? ApperyCollection.jsonSlurper.parseText(resp) :null;
     }
 
+    /**
+     * Add dependency library to output source.
+     */
     void dependency(String jsFile) {
         jsSource += '\n// ------ ' + jsFile + '\n' + new File(jsFile).text     
     }
@@ -326,6 +329,10 @@ class ServerCode {
         
     }
     
+    /**
+     * Support deprecated `.dependencies` format.
+     * @deprecated
+     */
     void dependencyList(String depFile) {
         File dep = new File(paramsFolder, depFile)
         if (!dep.exists()) {
