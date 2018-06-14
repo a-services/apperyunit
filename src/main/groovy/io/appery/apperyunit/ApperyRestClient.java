@@ -12,7 +12,7 @@ import org.apache.http.client.entity.*;
 import org.apache.http.message.*;
 
 /**
- * = Accessing Appery REST services.
+ * = Accessing Appery backend REST services.
  *
  * Appery REST services allow:
  * 
@@ -21,8 +21,6 @@ import org.apache.http.message.*;
  * - to get information about server-code dependencies, folders, parameters, etc.
  */
 public class ApperyRestClient {
-
-    static final String host = "appery.io";
 
     CloseableHttpClient httpclient = HttpClients.createDefault();
 
@@ -35,7 +33,7 @@ public class ApperyRestClient {
      * Performs HTTP GET.
      */
     String makeGet(String serviceUrl) throws IOException {
-        HttpGet req = new HttpGet("https://" + host + serviceUrl);
+        HttpGet req = new HttpGet("https://" + getHost() + serviceUrl);
         req.addHeader(new BasicHeader("Accept", "application/json"));
         req.addHeader(new BasicHeader("User-Agent", "My-Test-Agent"));
         CloseableHttpResponse response = httpclient.execute(req);
@@ -51,6 +49,14 @@ public class ApperyRestClient {
             response.close();
         }
         return result;
+    }
+    
+    String getHost() {
+        String host = System.getenv("AU_BACKEND");
+        if (host==null) {
+            host = "appery.io";
+        }
+        return host;
     }
 
 }

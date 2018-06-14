@@ -25,7 +25,9 @@ import org.apache.http.conn.ssl.*
 import javax.script.ScriptException
 
 /**
- * Provides methods to execute when buttons on `DashboardFrame` are called.
+ * Provides methods to execute when buttons on 
+ * <a href="../../../../javadoc/io/appery/apperyunit/DashboardFrame.html">DashboardFrame</a>
+ * are clicked.
  */
 public class ApperyClient extends ApperyRestClient {
 
@@ -156,9 +158,10 @@ public class ApperyClient extends ApperyRestClient {
     
     void loadScriptList() {
         String body = makeGet('/bksrv/rest/1/code/admin/script/?light=true')
-        //if (!sessionTokenExpired) {
-            scripts = jsonSlurper.parseText(body)
-        //}
+        scripts = jsonSlurper.parseText(body)
+
+        ensureFolder fixturesFolder
+        new File(fixturesFolder, 'aliases.json').text = body;
     }	
 
     void loadFolders() {

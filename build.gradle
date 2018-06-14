@@ -12,7 +12,7 @@ repositories {
 }
 
 jar {
-    baseName = 'apperyunit-1.00'
+    baseName = 'apperyunit-1.01'
 
     manifest { 
         attributes "Main-Class": "io.appery.apperyunit.au"
@@ -24,7 +24,7 @@ jar {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.4.13'
+    compile 'org.codehaus.groovy:groovy-all:2.5.0'
     compile 'org.apache.httpcomponents:httpclient:4.5.3'
     //compile 'com.google.code.gson:gson:2.8.0' 
 }
@@ -55,6 +55,15 @@ javadoc {
     options.noQualifiers = ['java.lang', 'java.util']
     options.memberLevel = JavadocMemberLevel.PACKAGE
     options.addStringOption "-base-dir", "${projectDir}" 
+}
+
+import org.gradle.api.tasks.javadoc.*
+
+groovydoc {
+    links = [
+        new Groovydoc.Link("http://docs.oracle.com/javase/8/docs/api/", \
+                           "java.", "javax.")  
+    ]
 }
 
 /*
