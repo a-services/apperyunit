@@ -231,6 +231,7 @@ public class ApperyClient extends ApperyRestClient {
      */
     void buildDependenciesPanel(JPanel dependenciesPanel) {
         List libs = scripts.findAll { !it.executable }
+        libs.sort()
         libs.each {
             JCheckBox cb = new JCheckBox(it.name);
             cb.setModel(new ReadOnlyToggleButtonModel(false));
@@ -255,10 +256,27 @@ public class ApperyClient extends ApperyRestClient {
         //println "--- curObj: " + curObj
         List deps = curObj.isScript? curObj.data.dependencies: []
         List libs = scripts.findAll { !it.executable }
+        int k = 0
         libs.each {
-            it.checkbox.model.val(deps.contains(it.guid))
+            boolean result = deps.contains(it.guid)
+            it.checkbox.model.val(result)
+            if (result) {
+                k++
+            }
         }
+        dashboardFrame.depsLabel.text = pluralDeps(k)
         //dashboardFrame.dependenciesPanel.repaint()
+    }
+    
+    String pluralDeps(int k) {
+        if (k==0) {
+            return "No dependencies"
+        } else   
+        if (k==1) {
+            return "1 dependency"
+        } else {
+            return k + " dependencies"
+        }   
     }
     
     /** 
@@ -714,28 +732,34 @@ public class ApperyClient extends ApperyRestClient {
         }
     }
     
-    void buttonSave() {
-        boolean validParams = true
-        String[] params = ServerCode.extractBody(dashboardFrame.paramsArea.text)
+    String prettyPrintParams(String text) {
         try {
-            jsonSlurper.parseText(params[0])
+            text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonSlurper.parseText(text)))
         } catch (JsonException e) {
-            validParams = false
             console '[ERROR] Cannot parse JSON parameters. Error message:'
             console "`"*80
             console e.getMessage()
         }
-        if (validParams) {
-            String scriptName = curObj.name
-            new File(scriptName + ".params").text = dashboardFrame.paramsArea.text
-            console "File saved: ${scriptName}.params"
-            
-            dashboardFrame.saveButton.setEnabled(false);
-            dashboardFrame.runButton.setEnabled(true);
-            dashboardFrame.echoButton.setEnabled(true);
-            dashboardFrame.testButton.setEnabled(true);
-            dashboardFrame.logsButton.setEnabled(true);
+        return text
+    }
+    
+    void buttonSave() {
+        String[] params = ServerCode.extractBody(dashboardFrame.paramsArea.text)
+        params[0] = prettyPrintParams(params[0])
+        if (params[1] != null) {
+            params[1] = prettyPrintParams(params[1])
+            params[0] += '\n----\n' + params[1]
         }
+        String scriptName = curObj.name
+        new File(paramsFolder, scriptName + ".params").text = params[0]
+        dashboardFrame.paramsArea.text = params[0]
+        console "File saved: ${scriptName}.params"
+
+        dashboardFrame.saveButton.setEnabled(false);
+        dashboardFrame.runButton.setEnabled(true);
+        dashboardFrame.echoButton.setEnabled(true);
+        dashboardFrame.testButton.setEnabled(true);
+        dashboardFrame.logsButton.setEnabled(true);
     }
     
     void checkApperyUnitVersion() {
