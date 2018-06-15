@@ -21,6 +21,7 @@ import javax.swing.event.TreeSelectionEvent
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import org.apache.http.conn.ssl.*
+import java.text.*
 
 import javax.script.ScriptException
 
@@ -41,6 +42,8 @@ public class ApperyClient extends ApperyRestClient {
     ScriptNode curObj;
     DashboardFrame dashboardFrame;
 
+    DateFormat df = new SimpleDateFormat('dd.MM.yyyy, KK:mm:ss aa')
+    
     /**
      * Initialize ApperyClient in GUI mode.
      */
@@ -94,6 +97,29 @@ public class ApperyClient extends ApperyRestClient {
             //saveDependencies(script)
             updateJsonDependencies(script)
         }
+    }
+
+    void loadLogs(ScriptJson script) {
+        if (script==null) {
+            console "${red}[WARN]${norm} Script not found: ${red}${scriptName}${norm}"    
+            return
+        } 
+        String scriptName = script.name
+        String body = makeGet('/bksrv/rest/1/code/admin/script/' + script.guid + '/trace')
+        def details = jsonSlurper.parseText(body)
+        
+        String outFolder = fixturesFolder + '/' + scriptName
+        ensureFolder(outFolder)
+        
+        StringBuilder sb = new StringBuilder()
+        for (def ln in details) {
+            sb.append(df.format(new Date(ln.time)) + ': ' + ln.text + '\n')
+        }
+        String result = sb.toString()
+        
+        new File(outFolder, scriptName + '.log').text = result 
+        console result
+        console "--- Eng of log for ${bold}${scriptName}${norm}"
     }
 
     String addGetParams(String url, Map parameters) {
@@ -423,7 +449,9 @@ public class ApperyClient extends ApperyRestClient {
         
         dashboardFrame.downloadButton.setEnabled(true)
         dashboardFrame.saveButton.setEnabled(false)
-        dashboardFrame.runButton.setEnabled(new File(scriptName+'.js').exists())
+        boolean scriptExists = new File(scriptName+'.js').exists()
+        dashboardFrame.runButton.setEnabled(scriptExists)
+        dashboardFrame.logsButton.setEnabled(scriptExists)
 
         File successFile = new File(fixturesFolder + '/' + scriptName + '/' + scriptName+'.success.json')
         dashboardFrame.echoButton.setEnabled(successFile.exists())
@@ -447,7 +475,7 @@ public class ApperyClient extends ApperyRestClient {
     }
         
     /**
-     * Instead of running `downloadProcess()` directly on click, 
+     * Instead of running `processDownload()` directly on click, 
      * we delegate it to `BatchRunner`  that implements `SwingWorker`.
      * @see #downloadProcess()
      */
@@ -459,7 +487,7 @@ public class ApperyClient extends ApperyRestClient {
         batchRunner.execute()
         batch_runner = null
     }
-    
+
     void markAsNotDownloaded(List<ScriptNode> scripts) {
         for (int i=0; i<scripts.size(); i++) {
             scripts[i].isDownloaded = false
@@ -469,7 +497,7 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * `Download` button clicked
      */
-    void downloadProcess() {
+    void processDownload() {
         dashboardFrame.downloadButton.setEnabled(false)
         try {
             ensureFolder(paramsFolder)
@@ -483,7 +511,7 @@ public class ApperyClient extends ApperyRestClient {
                 console "--- Downloading all scripts ---"
                 for (int i=0; i<scripts.size(); i++) {
                     downloadScript(scripts[i] as ScriptJson)
-                    console "Script saved: ${bold}${scripts[i].name}.js${norm}"
+                    //console "Script saved: ${bold}${scripts[i].name}.js${norm}"
                 }
             } else {
                 // is folder
@@ -492,7 +520,7 @@ public class ApperyClient extends ApperyRestClient {
                 for (def script in subscripts) {
                     downloadScript(script as ScriptJson)
                 }
-                console "--- Done ---"
+                //console "--- Done ---"
             }
             
             saveJsonDependencies()
@@ -515,6 +543,43 @@ public class ApperyClient extends ApperyRestClient {
     void ensureFixturesFolder() {
         ensureFolder(fixturesFolder)
     }
+
+    void buttonLogs() {
+        BatchRunner batchRunner = new BatchRunner()
+        batchRunner.apperyClient = this
+        batchRunner.mode = BatchRunnerMode.logsMode
+        batch_runner = batchRunner
+        batchRunner.execute()
+        batch_runner = null
+    }
+    
+    void processLogs() {
+        dashboardFrame.logsButton.setEnabled(false)
+        try {
+            if (curObj.isScript) {
+                loadLogs(curObj.data as ScriptJson)
+            } else 
+            if (curObj.isRoot) {
+                for (int i=0; i<scripts.size(); i++) {
+                    loadLogs(scripts[i] as ScriptJson)
+                    //console "--- Eng of log: ${bold}${scripts[i].name}.js${norm}"
+                }
+            } else {
+                // is folder
+                List subscripts = findAllScripts(curObj.data._id)
+                console "--- Downloading ${subscripts.size()} logs from `${curObj.name}` folder ---" 
+                for (def script in subscripts) {
+                    loadLogs(script as ScriptJson)
+                }
+                //console "--- Done ---"
+            }
+            
+        } catch (Exception e) {
+            handleException(e, null);
+        } finally {
+            dashboardFrame.logsButton.setEnabled(true)
+        }
+    }
     
     void buttonRun() {
         BatchRunner batchRunner = new BatchRunner()
@@ -525,7 +590,7 @@ public class ApperyClient extends ApperyRestClient {
         batch_runner = null        
     }
     
-    void runProcess() {
+    void processRun() {
         dashboardFrame.runButton.setEnabled(false)
         ServerCode sc = new ServerCode()
         try {
@@ -567,7 +632,7 @@ public class ApperyClient extends ApperyRestClient {
         batch_runner = null        
     }
     
-    void echoProcess() {
+    void processEcho() {
         dashboardFrame.echoButton.setEnabled(false)
         ServerCode sc = new ServerCode()
         try {
@@ -606,7 +671,7 @@ public class ApperyClient extends ApperyRestClient {
         batch_runner = null        
     }
 
-    void testProcess() {
+    void processTest() {
         dashboardFrame.echoButton.setEnabled(false)
         ServerCode sc = new ServerCode()
         try {
@@ -669,6 +734,7 @@ public class ApperyClient extends ApperyRestClient {
             dashboardFrame.runButton.setEnabled(true);
             dashboardFrame.echoButton.setEnabled(true);
             dashboardFrame.testButton.setEnabled(true);
+            dashboardFrame.logsButton.setEnabled(true);
         }
     }
     

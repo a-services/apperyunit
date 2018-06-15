@@ -14,16 +14,19 @@ class BatchRunner extends SwingWorker<Void, String> {
     protected Void doInBackground() {
         switch (mode) {
             case BatchRunnerMode.downloadMode:
-                apperyClient.downloadProcess();
+                apperyClient.processDownload();
                 break;
             case BatchRunnerMode.runMode:
-                apperyClient.runProcess();
+                apperyClient.processRun();
                 break;
             case BatchRunnerMode.echoMode:
-                apperyClient.echoProcess();
+                apperyClient.processEcho();
                 break;
             case BatchRunnerMode.testMode:
-                apperyClient.testProcess();
+                apperyClient.processTest();
+                break;
+            case BatchRunnerMode.logsMode:
+                apperyClient.processLogs();
                 break;
         }
         return null;
