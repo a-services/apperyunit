@@ -119,7 +119,7 @@ public class ApperyClient extends ApperyRestClient {
         
         new File(outFolder, scriptName + '.log').text = result 
         console result
-        console "--- Eng of log for ${bold}${scriptName}${norm}"
+        console "--- End of log for ${bold}${scriptName}${norm}"
     }
 
     String addGetParams(String url, Map parameters) {
@@ -580,7 +580,6 @@ public class ApperyClient extends ApperyRestClient {
             if (curObj.isRoot) {
                 for (int i=0; i<scripts.size(); i++) {
                     loadLogs(scripts[i] as ScriptJson)
-                    //console "--- Eng of log: ${bold}${scripts[i].name}.js${norm}"
                 }
             } else {
                 // is folder
