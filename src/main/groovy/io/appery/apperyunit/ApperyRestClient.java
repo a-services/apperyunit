@@ -24,6 +24,7 @@ public class ApperyRestClient {
 
     CloseableHttpClient httpclient = HttpClients.createDefault();
 
+    String host = "appery.io";
     String userName;
 
     List<ScriptJson> scripts;
@@ -33,9 +34,9 @@ public class ApperyRestClient {
      * Performs HTTP GET.
      */
     String makeGet(String serviceUrl) throws IOException {
-        HttpGet req = new HttpGet("https://" + getHost() + serviceUrl);
+        HttpGet req = new HttpGet("https://" + host + serviceUrl);
         req.addHeader(new BasicHeader("Accept", "application/json"));
-        req.addHeader(new BasicHeader("User-Agent", "My-Test-Agent"));
+        req.addHeader(new BasicHeader("User-Agent", "AU-Test-Agent"));
         CloseableHttpResponse response = httpclient.execute(req);
         String result = "";
         try {
@@ -51,12 +52,8 @@ public class ApperyRestClient {
         return result;
     }
     
-    String getHost() {
-        String host = System.getenv("AU_BACKEND");
-        if (host==null) {
-            host = "appery.io";
-        }
-        return host;
+    void setHost(String host) {
+        this.host = host;
     }
-
+    
 }

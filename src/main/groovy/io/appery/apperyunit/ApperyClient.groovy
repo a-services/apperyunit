@@ -14,6 +14,7 @@ import org.apache.http.client.*
 import org.apache.http.client.utils.*
 import org.apache.http.client.entity.*
 import org.apache.http.message.*
+import org.apache.http.entity.StringEntity
 import java.util.regex.*
 import javax.swing.*
 import javax.swing.JToggleButton.ToggleButtonModel
@@ -50,6 +51,12 @@ public class ApperyClient extends ApperyRestClient {
     void init(DashboardFrame dashboardFrame) {
         this.dashboardFrame = dashboardFrame
         console_area = dashboardFrame.consoleArea
+        
+        String envHost = System.getenv("AU_BACKEND");
+        if (envHost!=null) {
+            host = envHost
+        }
+
         openPasswordDialog();
     }
     
@@ -135,7 +142,11 @@ public class ApperyClient extends ApperyRestClient {
     }
 
     boolean doLogin(String username, String password) {
-        String target = "https://" + host + "/bksrv/"; // "/app/"
+        return doLogin(username, password, "/bksrv/") 
+    }
+    
+    boolean doLogin(String username, String password, String targetPath) {
+        String target = "https://" + host + targetPath; 
         String loginUrl = "https://idp." + host + "/idp/doLogin";
         loginUrl = addGetParams(loginUrl, [ "cn":username, "pwd":password, "target":target ])
         HttpGet request = new HttpGet(loginUrl);
@@ -807,4 +818,30 @@ public class ApperyClient extends ApperyRestClient {
             dashboardFrame.paramList.ensureIndexIsVisible(0);
         }
     }
+    
+    /* See StringEntity docs:
+       http://hc.apache.org/httpcomponents-core-ga/httpcore/apidocs/org/apache/http/entity/StringEntity.html
+     */
+    String makePost(String serviceUrl, String data) throws IOException {
+        HttpPost req = new HttpPost("https://" + host + serviceUrl);
+        req.addHeader(new BasicHeader("Accept", "application/json"));
+        req.addHeader(new BasicHeader("User-Agent", "AU-Test-Agent"));
+        req.addHeader(new BasicHeader("isrestapicall", "true"));
+        req.setEntity(new StringEntity(data));
+        CloseableHttpResponse response = httpclient.execute(req);
+        String result = "";
+        try {
+            int status = response.getStatusLine().getStatusCode();
+            println "-- makePost status: " + status
+            if (status != 200) {
+                throw new ApperyUnitException("HTTP status expected: 200, received: " + status);
+            }
+            result = EntityUtils.toString(response.getEntity());
+            //sessionTokenExpired = result.startsWith('<HTML>')
+        } finally {
+            response.close();
+        }
+        return result;
+    }
+        
 }
