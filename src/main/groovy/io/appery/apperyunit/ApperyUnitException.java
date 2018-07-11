@@ -10,4 +10,8 @@ class ApperyUnitException extends RuntimeException {
     ApperyUnitException(String reason) {
         this.reason = reason;
     }
+    
+    public String toString() {
+        return "[ApperyUnitException] Reason: " + reason;
+    }
 }

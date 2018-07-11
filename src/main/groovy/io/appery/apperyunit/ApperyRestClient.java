@@ -1,7 +1,7 @@
 package io.appery.apperyunit;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 import org.apache.http.impl.client.*;
 import org.apache.http.client.methods.*;
 import org.apache.http.*;
@@ -10,6 +10,9 @@ import org.apache.http.client.*;
 import org.apache.http.client.utils.*;
 import org.apache.http.client.entity.*;
 import org.apache.http.message.*;
+
+import org.apache.http.client.utils.URIBuilder;
+import java.net.URISyntaxException;
 
 /**
  * = Accessing Appery backend REST services.
@@ -33,8 +36,18 @@ public class ApperyRestClient {
     /**
      * Performs HTTP GET.
      */
-    String makeGet(String serviceUrl) throws IOException {
-        HttpGet req = new HttpGet("https://" + host + serviceUrl);
+    String makeGet(String serviceUrl, Map<String, String> params) throws IOException {
+        HttpGet req;
+        try {
+            URIBuilder ub = new URIBuilder("https://" + host + serviceUrl);
+            if (params!=null) {
+                params.forEach((key,value) -> ub.setParameter(key, value));
+            }
+            req = new HttpGet(ub.build());
+            
+        } catch(URISyntaxException e) {
+            throw new ApperyUnitException("[URISyntaxException] " + e.getMessage());
+        }
         req.addHeader(new BasicHeader("Accept", "application/json"));
         req.addHeader(new BasicHeader("User-Agent", "AU-Test-Agent"));
         CloseableHttpResponse response = httpclient.execute(req);
@@ -50,6 +63,10 @@ public class ApperyRestClient {
             response.close();
         }
         return result;
+    }
+
+    String makeGet(String serviceUrl) throws IOException {
+        return makeGet(serviceUrl, null);
     }
     
     void setHost(String host) {

@@ -824,6 +824,7 @@ public class ApperyClient extends ApperyRestClient {
      */
     String makePost(String serviceUrl, String data) throws IOException {
         HttpPost req = new HttpPost("https://" + host + serviceUrl);
+        req.addHeader(new BasicHeader("Content-Type", "application/json"));
         req.addHeader(new BasicHeader("Accept", "application/json"));
         req.addHeader(new BasicHeader("User-Agent", "AU-Test-Agent"));
         req.addHeader(new BasicHeader("isrestapicall", "true"));
@@ -832,7 +833,28 @@ public class ApperyClient extends ApperyRestClient {
         String result = "";
         try {
             int status = response.getStatusLine().getStatusCode();
-            println "-- makePost status: " + status
+            if (status != 200) {
+                throw new ApperyUnitException("HTTP status expected: 200, received: " + status);
+            }
+            result = EntityUtils.toString(response.getEntity());
+            //sessionTokenExpired = result.startsWith('<HTML>')
+        } finally {
+            response.close();
+        }
+        return result;
+    }
+
+    String makePut(String serviceUrl, String data) throws IOException {
+        HttpPut req = new HttpPut("https://" + host + serviceUrl);
+        req.addHeader(new BasicHeader("Content-Type", "application/json"));
+        req.addHeader(new BasicHeader("Accept", "application/json"));
+        req.addHeader(new BasicHeader("User-Agent", "AU-Test-Agent"));
+        req.addHeader(new BasicHeader("isrestapicall", "true"));
+        req.setEntity(new StringEntity(data));
+        CloseableHttpResponse response = httpclient.execute(req);
+        String result = "";
+        try {
+            int status = response.getStatusLine().getStatusCode();
             if (status != 200) {
                 throw new ApperyUnitException("HTTP status expected: 200, received: " + status);
             }
