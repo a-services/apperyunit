@@ -12,9 +12,7 @@ class ApperyClientSpec extends Specification {
 
   ApperyClient ac;
 
-  @Ignore
-  def "Add button to Home page in Appery project"() {
-  	setup:
+  void loginApperyBeta() {
     checkDebuggingCredentials()
     assert username!=null && password!=null
 
@@ -22,16 +20,46 @@ class ApperyClientSpec extends Specification {
     ac.host = 'beta.dev.appery.io'
     boolean ok = ac.doLogin(username, password, "/app/")
     assert ok, "Login successful"
+  }
 
-    def projList = loadProjectList()
-    def p = projList.find { it.name=="PWA Pizza 2"}
-    assert p!=null
-    
-    def projInfo = loadProjectInfo(p.guid)
-    def homePage = projInfo.assets.SCREEN.find { it.name=="home" }
+  @Ignore
+  def "Export `home` page assets from `PWA Pizza` project"() {
+    setup:
+    loginApperyBeta()
+    def proj = loadProject("PWA Pizza")
+    assert proj!=null
+
+    def homeAssets = loadPageAssets("home")
+    assert homeAssets!=null
+
+    saveJson(homeAssets, 'build/home_assets.json')
+  }
+
+  String projectGuid;
+
+  def loadProject(String projectName) {
+    def projList = ac.loadProjectList()
+    def proj = projList.find { it.name==projectName }
+    projectGuid = proj.guid
+    return proj
+  } 
+
+  def loadPageAssets(String pageName) {
+    assert projectGuid!=null
+    def projInfo = ac.loadProjectInfo( projectGuid )
+    def homePage = projInfo.assets.SCREEN.find { it.name==pageName }
     assert homePage!=null
+    return ac.loadProjectAssets( projectGuid, [homePage.assetId] )
+  }
 
-    def homeAssets = loadProjectAssets(p.guid, [homePage.assetId])
+  @Ignore
+  def "Add button to Home page in Appery project"() {
+  	setup:
+    loginApperyBeta()
+    def proj = loadProject("PWA Pizza 2")
+    assert proj!=null
+    
+    def homeAssets = loadPageAssets("home")
     assert homeAssets.assets.size()==1
     def homeAsset = homeAssets.assets[0]
     
@@ -39,8 +67,8 @@ class ApperyClientSpec extends Specification {
     assert contentBeans.size()==3 // header, body, footer
     def content = contentBeans[1].children.bean
 
-    content.add(createNewButton("AU Button 7", "Button7"))
-    updateProjectAssets(p.guid, homeAssets)
+    content.add(createNewButton("AU Button 3", "Button3"))
+    ac.updateProjectAssets(proj.guid, homeAssets)
   }
 
   Map createNewButton(String buttonText, String componentName) {
@@ -76,57 +104,9 @@ class ApperyClientSpec extends Specification {
     ]
   }
 
-  def updateProjectAssets(String projectGuid, assetsData) {
-  	String data = JsonOutput.toJson(assetsData)
-    String fname = "build/asset_update.json"
-    new File(fname).text = data
-    println "-- Project asset update request stored to `$fname`"
-    String result = ac.makePut('/app/rest/html5/project/' + projectGuid + '/asset/data', data)
-    println "-- Project asset update response: " + result
-  }
-
-  def loadProjectAssets(String projectGuid, List<String> assets) {
-  	String data = JsonOutput.toJson(["assets": assets.collect { ['id':it] }])
-    println "-- data: " + data
-    String result = ac.makePost('/app/rest/html5/project/' + projectGuid + '/asset/data', data)
-    String fname = "build/project_assets.json"
-    new File(fname).text = result
-    println "-- Project assets load response stored to `$fname`"
-    return new JsonSlurper().parseText(result)
-  }
-
-  def loadProjectInfo(String guid) {
-    String result = ac.makeGet('/app/rest/html5/project', ['guid':guid])
-    String fname = "build/project_info.json"
-    new File(fname).text = result
-    println "-- Project info response stored to `$fname`"
-    return new JsonSlurper().parseText(result)
-  }
-
-  def loadProjectList() {
-    String result = ac.makeGet('/app/rest/projects')
-    String fname = "build/project_list.json"
-    new File(fname).text = result
-    println "-- Project list response stored to `$fname`"
-    return new JsonSlurper().parseText(result)
-  }
-
-  def loadProjectTemplates() {
-    String result = ac.makeGet('/app/rest/html5/plugin/wizardProject')
-    String fname = "build/project_types.json"
-    new File(fname).text = result
-    println "-- Project types response stored to `$fname`"
-    return new JsonSlurper().parseText(result)
-  }
-
-  def createApperyProject(String projectName, int projectType) {
-    String data = JsonOutput.toJson(["name":projectName,"templateId":projectType])
-    println "-- data: " + data
-    String result = ac.makePost('/app/rest/projects', data)
-    String fname = "build/project_create.json"
-    new File(fname).text = result
-    println "-- Project creation response stored to `$fname`"
-    return new JsonSlurper().parseText(result)
+  void saveJson(jsonData, String fname) {
+      new File(fname).text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonData))
+      println "-- `$fname` saved"
   }
 
   void checkDebuggingCredentials() {
@@ -145,19 +125,14 @@ class ApperyClientSpec extends Specification {
   @Ignore
   def "Create Ionic 3 project on Beta"() {
   	setup:
-    checkDebuggingCredentials()
-    assert username!=null && password!=null
+    loginApperyBeta()
 
-    ac = new ApperyClient()
-    ac.host = 'beta.dev.appery.io'
-    boolean ok = ac.doLogin(username, password, "/app/")
-    assert ok, "Login successful"
-    
-    def tlist = loadProjectTemplates()
+    def tlist = ac.loadProjectTemplates()
     def t = tlist.templates.find { it.name=="Ionic3 Blank" }
     assert t.id==PROJECT_IONIC_3_BLANK && t.projectId==PROJECT_IONIC_3_BLANK
 
-    createApperyProject("PWA Pizza 5", PROJECT_IONIC_3_BLANK)    
+    def res = ac.createApperyProject("PWA Pizza 5", PROJECT_IONIC_3_BLANK)
+    saveJson(res, "build/project_create.json")    
   }
 
 }

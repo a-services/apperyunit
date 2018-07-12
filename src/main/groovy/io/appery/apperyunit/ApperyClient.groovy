@@ -14,7 +14,6 @@ import org.apache.http.client.*
 import org.apache.http.client.utils.*
 import org.apache.http.client.entity.*
 import org.apache.http.message.*
-import org.apache.http.entity.StringEntity
 import java.util.regex.*
 import javax.swing.*
 import javax.swing.JToggleButton.ToggleButtonModel
@@ -27,24 +26,24 @@ import java.text.*
 import javax.script.ScriptException
 
 /**
- * Provides methods to execute when buttons on 
- * <a href="../../../../javadoc/io/appery/apperyunit/DashboardFrame.html">DashboardFrame</a>
- * are clicked.
+ * Provides service methods attached to buttons on DashboardFrame.
  */
 public class ApperyClient extends ApperyRestClient {
 
-    JsonSlurper jsonSlurper = new JsonSlurper()
-    
     /**
      * Maps script name to the list of dependencies.
      */
     Map<String,List<String>> jsonDeps = [:];
     
+    /**
+     * Current node selected in DashboardFrame.
+     */
     ScriptNode curObj;
-    DashboardFrame dashboardFrame;
 
-    DateFormat df = new SimpleDateFormat('dd.MM.yyyy, KK:mm:ss aa')
-    
+    private DashboardFrame dashboardFrame;
+
+    private DateFormat df = new SimpleDateFormat('dd.MM.yyyy, KK:mm:ss aa')
+
     /**
      * Initialize ApperyClient in GUI mode.
      */
@@ -106,14 +105,16 @@ public class ApperyClient extends ApperyRestClient {
         }
     }
 
+    /**
+     * Load script logs from Appery and send them to console.
+     */
     void loadLogs(ScriptJson script) {
         if (script==null) {
             console "${red}[WARN]${norm} Script not found: ${red}${scriptName}${norm}"    
             return
         } 
         String scriptName = script.name
-        String body = makeGet('/bksrv/rest/1/code/admin/script/' + script.guid + '/trace')
-        def details = jsonSlurper.parseText(body)
+        def details = loadScriptLogs(script.guid)
         
         String outFolder = fixturesFolder + '/' + scriptName
         ensureFolder(outFolder)
@@ -129,22 +130,31 @@ public class ApperyClient extends ApperyRestClient {
         console "--- End of log for ${bold}${scriptName}${norm}"
     }
 
+    /**
+     * Add parameters to GET URL.
+     */
     String addGetParams(String url, Map parameters) {
-        URL u = new URL(url)
+        URL u = new URL(url);
         URIBuilder uriBuilder = new URIBuilder()
                 .setScheme(u.protocol)
                 .setHost(u.host)
-                .setPath(u.path)
+                .setPath(u.path);
         parameters.each { name, value ->
-            uriBuilder.addParameter(name, value)
+            uriBuilder.addParameter(name, value);
         }
-        return uriBuilder.build()
+        return uriBuilder.build();
     }
 
+    /**
+     * Performs SAML login to access Appery.io backend funnctions.
+     */
     boolean doLogin(String username, String password) {
         return doLogin(username, password, "/bksrv/") 
     }
     
+    /**
+     * Performs SAML login into Appery.io site.
+     */
     boolean doLogin(String username, String password, String targetPath) {
         String target = "https://" + host + targetPath; 
         String loginUrl = "https://idp." + host + "/idp/doLogin";
@@ -155,10 +165,12 @@ public class ApperyClient extends ApperyRestClient {
         String htmlText = response.body
         String samlKey = getSAMLDocumentFromPage(htmlText)
         if (samlKey==null) {
+            console "[ERROR] Login error: SAML key not found"
             return false
         }
         String targetIdpUrl = getActionEndpointURL(htmlText)
         if (targetIdpUrl==null) {
+            console "[ERROR] Login error: target IDP URL not found"
             return false
         }
         HttpPost samlRequest = new HttpPost(targetIdpUrl);
@@ -171,7 +183,10 @@ public class ApperyClient extends ApperyRestClient {
         return true
     }
 
-    String getSAMLDocumentFromPage(String htmlpage_text) {
+    /**
+     * Get SAML document during login.
+     */
+    private String getSAMLDocumentFromPage(String htmlpage_text) {
         Pattern samlPattern = Pattern.compile("VALUE=\"([^\"]+)");
         Matcher m = samlPattern.matcher(htmlpage_text);
         if (m.find()) {
@@ -181,7 +196,10 @@ public class ApperyClient extends ApperyRestClient {
         return null;
     }
 
-    String getActionEndpointURL(String htmlpage_text) {
+    /**
+     * Get action endpoint during login.
+     */
+    private String getActionEndpointURL(String htmlpage_text) {
         Pattern actionPattern = Pattern.compile("ACTION=\"([^\"]+)");
         Matcher m = actionPattern.matcher(htmlpage_text);
         if (m.find()) {
@@ -190,8 +208,6 @@ public class ApperyClient extends ApperyRestClient {
         } 
         return null;
     }
-    
-
     
     void loadScriptList() {
         String body = makeGet('/bksrv/rest/1/code/admin/script/?light=true')
@@ -609,6 +625,9 @@ public class ApperyClient extends ApperyRestClient {
         }
     }
     
+    /**
+     * Starts `ServerCode` script in parallel thread.
+     */
     void buttonRun() {
         BatchRunner batchRunner = new BatchRunner()
         batchRunner.apperyClient = this
@@ -618,6 +637,9 @@ public class ApperyClient extends ApperyRestClient {
         batch_runner = null        
     }
     
+    /**
+     * Runs `ServerCode` script in parallel thread.
+     */
     void processRun() {
         dashboardFrame.runButton.setEnabled(false)
         ServerCode sc = new ServerCode()
@@ -651,6 +673,9 @@ public class ApperyClient extends ApperyRestClient {
         }
     }
     
+    /**
+     * Starts `ServerCode` echo in parallel thread.
+     */
     void buttonEcho() {
         BatchRunner batchRunner = new BatchRunner()
         batchRunner.apperyClient = this
@@ -660,6 +685,9 @@ public class ApperyClient extends ApperyRestClient {
         batch_runner = null        
     }
     
+    /**
+     * Runs `ServerCode` echo in parallel thread.
+     */
     void processEcho() {
         dashboardFrame.echoButton.setEnabled(false)
         ServerCode sc = new ServerCode()
@@ -690,6 +718,9 @@ public class ApperyClient extends ApperyRestClient {
         }
     }
     
+    /**
+     * Starts `ServerCode` test in parallel thread.
+     */
     void buttonTest() {
         BatchRunner batchRunner = new BatchRunner()
         batchRunner.apperyClient = this
@@ -699,6 +730,9 @@ public class ApperyClient extends ApperyRestClient {
         batch_runner = null        
     }
 
+    /**
+     * Runs `ServerCode` test in parallel thread.
+     */
     void processTest() {
         dashboardFrame.echoButton.setEnabled(false)
         ServerCode sc = new ServerCode()
@@ -742,6 +776,9 @@ public class ApperyClient extends ApperyRestClient {
         }
     }
     
+    /**
+     * Apply prettyprinting to contents of *Params* textarea.
+     */
     String prettyPrintParams(String text) {
         try {
             text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonSlurper.parseText(text)))
@@ -753,6 +790,9 @@ public class ApperyClient extends ApperyRestClient {
         return text
     }
     
+    /**
+     * Saves `.params` file for `curObj`.
+     */
     void buttonSave() {
         String[] params = ServerCode.extractBody(dashboardFrame.paramsArea.text)
         params[0] = prettyPrintParams(params[0])
@@ -772,6 +812,10 @@ public class ApperyClient extends ApperyRestClient {
         dashboardFrame.logsButton.setEnabled(true);
     }
     
+    /**
+     * Checks ApperyDB if we are running the latest program version
+     * and updates `scriptNameLabel` in `DashboardFrame` appropriately.
+     */
     void checkApperyUnitVersion() {
         URIBuilder uriBuilder = new URIBuilder()
             .setScheme("https")
@@ -809,6 +853,10 @@ public class ApperyClient extends ApperyRestClient {
         }
     }
     
+    /**
+     * Fills `paramList` in `DashboardFrame` with 
+     * params info from `curObj`.
+     */
     void buildParamList() {
         ListModel<String> listModel = new DefaultListModel<String>();
         dashboardFrame.paramList.setModel(listModel);
@@ -819,51 +867,55 @@ public class ApperyClient extends ApperyRestClient {
         }
     }
     
-    /* See StringEntity docs:
-       http://hc.apache.org/httpcomponents-core-ga/httpcore/apidocs/org/apache/http/entity/StringEntity.html
+    /**
+     * Get available templates to create projects in Appery.io workspace. 
      */
-    String makePost(String serviceUrl, String data) throws IOException {
-        HttpPost req = new HttpPost("https://" + host + serviceUrl);
-        req.addHeader(new BasicHeader("Content-Type", "application/json"));
-        req.addHeader(new BasicHeader("Accept", "application/json"));
-        req.addHeader(new BasicHeader("User-Agent", "AU-Test-Agent"));
-        req.addHeader(new BasicHeader("isrestapicall", "true"));
-        req.setEntity(new StringEntity(data));
-        CloseableHttpResponse response = httpclient.execute(req);
-        String result = "";
-        try {
-            int status = response.getStatusLine().getStatusCode();
-            if (status != 200) {
-                throw new ApperyUnitException("HTTP status expected: 200, received: " + status);
-            }
-            result = EntityUtils.toString(response.getEntity());
-            //sessionTokenExpired = result.startsWith('<HTML>')
-        } finally {
-            response.close();
-        }
-        return result;
+    def loadProjectTemplates() {
+        String result = makeGet('/app/rest/html5/plugin/wizardProject')
+        return jsonSlurper.parseText(result)
     }
-
-    String makePut(String serviceUrl, String data) throws IOException {
-        HttpPut req = new HttpPut("https://" + host + serviceUrl);
-        req.addHeader(new BasicHeader("Content-Type", "application/json"));
-        req.addHeader(new BasicHeader("Accept", "application/json"));
-        req.addHeader(new BasicHeader("User-Agent", "AU-Test-Agent"));
-        req.addHeader(new BasicHeader("isrestapicall", "true"));
-        req.setEntity(new StringEntity(data));
-        CloseableHttpResponse response = httpclient.execute(req);
-        String result = "";
-        try {
-            int status = response.getStatusLine().getStatusCode();
-            if (status != 200) {
-                throw new ApperyUnitException("HTTP status expected: 200, received: " + status);
-            }
-            result = EntityUtils.toString(response.getEntity());
-            //sessionTokenExpired = result.startsWith('<HTML>')
-        } finally {
-            response.close();
-        }
-        return result;
+    
+    /**
+     * Create project in Appery.io workspace.
+     */
+    def createApperyProject(String projectName, int projectType) {
+        String data = JsonOutput.toJson(["name":projectName,"templateId":projectType])
+        String result = makePost('/app/rest/projects', data)
+        return jsonSlurper.parseText(result)
     }
-        
+    
+    /**
+     * Get list of existing projects in Appery.io workspace.
+     */
+    def loadProjectList() {
+        String result = makeGet('/app/rest/projects')
+        return jsonSlurper.parseText(result)
+    }
+    
+    /**
+     * Get information about project in Appery.io workspace.
+     */
+    def loadProjectInfo(String guid) {
+        String result = makeGet('/app/rest/html5/project', ['guid':guid])
+        return jsonSlurper.parseText(result)
+    }
+    
+    /**
+     * Load list of assets for Appery.io project.
+     */
+    def loadProjectAssets(String projectGuid, List<String> assets) {
+        String data = JsonOutput.toJson(["assets": assets.collect { ['id':it] }])
+        String result = makePost('/app/rest/html5/project/' + projectGuid + '/asset/data', data)
+        return jsonSlurper.parseText(result)
+    }
+    
+    /**
+     * Update list of assets in Appery.io project.
+     */
+    String updateProjectAssets(String projectGuid, assetsData) {
+        String data = JsonOutput.toJson(assetsData)
+        String result = makePut('/app/rest/html5/project/' + projectGuid + '/asset/data', data)
+        return result
+    }
+            
 }
