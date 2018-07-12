@@ -23,6 +23,42 @@ class ApperyClientSpec extends Specification {
   }
 
   @Ignore
+  def "Export HTML source of `home` page"() {
+    setup:
+    loginApperyBeta()
+    def proj = loadProject("PWA Pizza")
+    assert proj!=null
+    
+    def srcInfo = loadSourceInfo()
+    assert srcInfo!=null
+    
+    def homeSrc = srcInfo.response.find { it.path=="/src/pages/home/home.html" }
+    assert homeSrc!=null
+    String body = ac.makeGet('/app/rest/html5/ide/source/' + homeSrc.id + '/read/data')
+    String fname = 'build/home_src.html'
+    new File(fname).text = body
+    println "-- File saved: `$fname`"
+  }
+
+  def loadSourceInfo() {
+      int retryCount = 3
+      while (retryCount>0) {
+          try {
+              def resp = ac.makeGet('/app/rest/html5/ide/source/read/' + projectGuid + '/IONIC/')
+              return new JsonSlurper().parseText(resp)
+          } catch(ApperyUnitException e) {
+              if (e.reason.endsWith(' 202')) {
+                  retryCount--
+                  println "-- Retrying to load source info..."
+                  sleep(1000)
+              } else {
+                  return null
+              }
+          }
+      }
+  }
+  
+  @Ignore
   def "Export `home` page assets from `PWA Pizza` project"() {
     setup:
     loginApperyBeta()
