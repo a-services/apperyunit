@@ -15,45 +15,45 @@ import javax.swing.tree.TreeSelectionModel;
  */
 public class DashboardFrame extends javax.swing.JFrame {
 
-    ApperyClient apperyClient = new ApperyClient(); 
+    ApperyService appery; 
             
     /**
      * Creates new form DashboardFrame
      */
     public DashboardFrame() {
+        appery = new ApperyService(this);
         initComponents();
         setLocationRelativeTo(null);
         Utils.setIcon(this);
-                ;
+                
         DefaultCaret caret = (DefaultCaret)consoleArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        apperyClient.init(this);
     }
 
     void createDashboard() {
-        apperyClient.loadScriptList();
-        apperyClient.loadFolders();
-        apperyClient.loadJsonDependencies();
-        apperyClient.ensureFixturesFolder();
+        appery.loadScriptList();
+        appery.loadFolders();
+        appery.loadJsonDependencies();
+        appery.ensureFixturesFolder();
         //depsPanel.setLayout(new GridLayout(0, 1));
         depsScroll.setPreferredSize(new Dimension(200,200));
         depsPanel.setLayout(new BoxLayout(depsPanel, BoxLayout.Y_AXIS));
-        apperyClient.buildDependenciesPanel(depsPanel);
-        apperyClient.printStats();
+        appery.buildDependenciesPanel(depsPanel);
+        appery.printStats();
         
         scriptNameLabel.setText("<html><b>ApperyUnit</b> Version " + Utils.apperyUnitVersion + "</html>");
-        apperyClient.checkApperyUnitVersion();
+        appery.checkApperyUnitVersion();
                 
-        scriptsTree.setModel(apperyClient.buildTree());
+        scriptsTree.setModel(appery.buildTree());
         scriptsTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         scriptsTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
-                apperyClient.treeNodeSelected(e);
+                appery.treeNodeSelected(e);
             }
         });
         
-        apperyClient.buildParamList();
+        appery.buildParamList();
         //setVisible(true);
     }
     
@@ -432,27 +432,27 @@ public class DashboardFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_closeButtonActionPerformed
 
     private void logsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logsButtonActionPerformed
-        apperyClient.buttonLogs();
+        appery.buttonLogs();
     }//GEN-LAST:event_logsButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        apperyClient.buttonSave();
+        appery.buttonSave();
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void downloadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButtonActionPerformed
-        apperyClient.buttonDownload();
+        appery.buttonDownload();
     }//GEN-LAST:event_downloadButtonActionPerformed
 
     private void testButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testButtonActionPerformed
-        apperyClient.buttonTest();
+        appery.buttonTest();
     }//GEN-LAST:event_testButtonActionPerformed
 
     private void echoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_echoButtonActionPerformed
-        apperyClient.buttonEcho();
+        appery.buttonEcho();
     }//GEN-LAST:event_echoButtonActionPerformed
 
     private void runButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runButtonActionPerformed
-        apperyClient.buttonRun();
+        appery.buttonRun();
     }//GEN-LAST:event_runButtonActionPerformed
 
     private void paramAreaChanged(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_paramAreaChanged

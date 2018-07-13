@@ -7,7 +7,7 @@ Usage: http://apperyunit.app.appery.io
 GUI::   
 link:../groovydoc/io/appery/apperyunit/au.html[au] -> 
 link:io/appery/apperyunit/DashboardFrame.html[DashboardFrame] -> 
-link:../groovydoc/io/appery/apperyunit/ApperyClient.html[ApperyClient] -> 
+link:../groovydoc/io/appery/apperyunit/ApperyService.html[ApperyService] -> 
 link:io/appery/apperyunit/PasswordDialog.html[PasswordDialog]
 
 Console::
@@ -19,9 +19,16 @@ link:../groovydoc/io/appery/apperyunit/ApperyCollection.html[ApperyCollection]
 
 Additional configuration is possible with environment variables.
 
+AU_DEBUG::
+Specifies string with `username:password` that will be used 
+as default credentials in
+link:../groovydoc/io/appery/apperyunit/ApperyClient.html[ApperyClient]  
+and
 link:io/appery/apperyunit/PasswordDialog.html[PasswordDialog]
-uses `AU_DEBUG` with `username:password`.
 
+AU_BACKEND::
+Changes host name to be used by
+link:../groovydoc/io/appery/apperyunit/ApperyClient.html[ApperyClient]  
+and 
 link:io/appery/apperyunit/ApperyRestClient.html[ApperyRestClient]
-uses `AU_BACKEND` with Appery backend host, `appery.io` by default.
-Can be used to switch to Appery Gamma.
+which is `appery.io` by default.

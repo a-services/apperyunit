@@ -1,8 +1,5 @@
 /** 
  * Emulate Appery Server Code call.
- * 
- * Calling classes: 
- *   `au` -> `DashboardFrame` -> `ApperyClient` -> `PasswordDialog`
  */
 
 package io.appery.apperyunit

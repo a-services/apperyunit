@@ -7,26 +7,26 @@ import javax.swing.*;
 
 class BatchRunner extends SwingWorker<Void, String> {
     
-    ApperyClient apperyClient;
+    ApperyService appery;
     BatchRunnerMode mode;
     
     @Override
     protected Void doInBackground() {
         switch (mode) {
             case BatchRunnerMode.downloadMode:
-                apperyClient.processDownload();
+                appery.processDownload();
                 break;
             case BatchRunnerMode.runMode:
-                apperyClient.processRun();
+                appery.processRun();
                 break;
             case BatchRunnerMode.echoMode:
-                apperyClient.processEcho();
+                appery.processEcho();
                 break;
             case BatchRunnerMode.testMode:
-                apperyClient.processTest();
+                appery.processTest();
                 break;
             case BatchRunnerMode.logsMode:
-                apperyClient.processLogs();
+                appery.processLogs();
                 break;
         }
         return null;

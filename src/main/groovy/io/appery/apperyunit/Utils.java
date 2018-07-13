@@ -5,6 +5,9 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Some static flags and methods for the app.
@@ -54,6 +57,15 @@ class Utils {
 
     static JTextArea console_area;
     static BatchRunner batch_runner;
+   
+    /**
+     * Date format used in Appery server code logs.
+     */
+    static DateFormat logDateFormat = new SimpleDateFormat("dd.MM.yyyy, KK:mm:ss aa");
+
+    static String logDate(long tstamp) {
+        return logDateFormat.format(new Date(tstamp));
+    }
     
     /**
      * Checks that folder `folderName` exists and creates it if necessary.
