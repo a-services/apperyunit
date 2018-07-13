@@ -1,9 +1,6 @@
 package io.appery.apperyunit
 
 import groovy.json.*
-import java.awt.Cursor
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
 import static io.appery.apperyunit.Utils.*
 
 import org.apache.http.impl.client.*
@@ -15,11 +12,6 @@ import org.apache.http.client.utils.*
 import org.apache.http.client.entity.*
 import org.apache.http.message.*
 import java.util.regex.*
-import javax.swing.*
-import javax.swing.JToggleButton.ToggleButtonModel
-import javax.swing.event.TreeSelectionEvent
-import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.DefaultTreeModel
 import org.apache.http.conn.ssl.*
 import java.text.*
 

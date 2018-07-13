@@ -34,7 +34,7 @@ public class ApperyService {
      * Maps script name to the list of dependencies.
      */
     Map<String,List<String>> jsonDeps = [:];
-    
+
     /**
      * Current node selected in DashboardFrame.
      */
@@ -49,7 +49,7 @@ public class ApperyService {
 
     ApperyClient apperyClient;
 
-    ApperyService(DashboardFrame dashboardFrame) {
+    void init(DashboardFrame dashboardFrame) {
         this.dashboardFrame = dashboardFrame
         console_area = dashboardFrame.consoleArea
         apperyClient = new ApperyClient()
@@ -81,16 +81,16 @@ public class ApperyService {
     void downloadScript(ScriptJson script) {
         //def script = scripts.find { it.name==scriptName }
         if (script==null) {
-            console "${red}[WARN]${norm} Script not found: ${red}${scriptName}${norm}"    
-        } else 
+            console "${red}[WARN]${norm} Script not found: ${red}${scriptName}${norm}"
+        } else
         if (!script.isDownloaded) {
             script.isDownloaded = true
             String scriptName = script.name
             def details = apperyClient.downloadScript(script.guid)
-            File f =  new File(scriptName + '.js') 
+            File f =  new File(scriptName + '.js')
             /*
             if (!overwrite && f.exists()) {
-                console "${red}[WARN]${norm} Already exists: ${red}${scriptName}.js${norm}"    
+                console "${red}[WARN]${norm} Already exists: ${red}${scriptName}.js${norm}"
                 return
             }
             */
@@ -106,29 +106,29 @@ public class ApperyService {
      */
     void loadLogs(ScriptJson script) {
         if (script==null) {
-            console "${red}[WARN]${norm} Script not found: ${red}${scriptName}${norm}"    
+            console "${red}[WARN]${norm} Script not found: ${red}${scriptName}${norm}"
             return
-        } 
+        }
         String scriptName = script.name
         def details = apperyClient.loadScriptLogs(script.guid)
-        
+
         String outFolder = fixturesFolder + '/' + scriptName
         ensureFolder(outFolder)
-        
+
         StringBuilder sb = new StringBuilder()
         for (def ln in details) {
             sb.append(logDate(ln.time) + ': ' + ln.text + '\n')
         }
         String result = sb.toString()
-        
-        new File(outFolder, scriptName + '.log').text = result 
+
+        new File(outFolder, scriptName + '.log').text = result
         console result
         console "--- End of log for ${bold}${scriptName}${norm}"
     }
 
     void loadScriptList() {
         scripts = apperyClient.loadServerCodesList();
-    }	
+    }
 
     void loadFolders() {
     	folders = apperyClient.loadServerCodesFolders();
@@ -145,24 +145,24 @@ public class ApperyService {
         {
             super();
         }
-        
+
         public ReadOnlyToggleButtonModel(boolean selected)
         {
             super();
             super.setSelected(selected);
         }
-        
+
         public val(boolean selected) {
             super.setSelected(selected);
-        } 
-        
+        }
+
         @Override
         public void setSelected(boolean b)
         {
             // intentionally do nothing
         }
     }
-  
+
     /**
      * Create checkboxes in `dependenciesPanel`
      */
@@ -186,9 +186,9 @@ public class ApperyService {
     }
 
     /**
-     * Find out list of dependencies for `curObj` annd 
-     * set checkbox values in `dependenciesPanel` 
-     */ 
+     * Find out list of dependencies for `curObj` annd
+     * set checkbox values in `dependenciesPanel`
+     */
     void setCurrentDependencies() {
         //println "--- curObj: " + curObj
         List deps = curObj.isScript? curObj.data.dependencies: []
@@ -204,25 +204,25 @@ public class ApperyService {
         dashboardFrame.depsLabel.text = pluralDeps(k)
         //dashboardFrame.dependenciesPanel.repaint()
     }
-    
+
     String pluralDeps(int k) {
         if (k==0) {
             return "No dependencies"
-        } else   
+        } else
         if (k==1) {
             return "1 dependency"
         } else {
             return k + " dependencies"
-        }   
+        }
     }
 
-    /** 
-     * Save `.dependencies` file if not exists 
+    /**
+     * Save `.dependencies` file if not exists
      */
     void saveDependencies(obj, boolean downloadJS) {
-        String scriptName = obj.name 
+        String scriptName = obj.name
         List dependencies = findAllDependencies(obj)
-        
+
         File f = new File(paramsFolder, scriptName + '.dependencies')
         if (dependencies.size()==0) {
             f.delete()
@@ -239,14 +239,14 @@ public class ApperyService {
         w.close()
         console "Dependencies: ${scriptName}.dependencies"
     }
-    
+
     void saveDependencies(obj) {
         saveDependencies(obj, true)
     }
-    
+
     /**
      * Find dependencies of dependencies.
-     * @param obj  ScriptNode.data as script 
+     * @param obj  ScriptNode.data as script
      */
     List<String> findAllDependencies(obj) {
         DepTracker dt = new DepTracker()
@@ -255,8 +255,8 @@ public class ApperyService {
     }
 
     /**
-     * Find all child scripts of some folder. 
-     */ 
+     * Find all child scripts of some folder.
+     */
     List<String> findAllScripts(folderId) {
         DepTracker dt = new DepTracker()
         dt.trackFolderScripts(folderId)
@@ -281,37 +281,37 @@ public class ApperyService {
         }
         //}
     }
-    
+
     /**
      * Rewrite `dependencies.json` file.
      */
     void saveJsonDependencies() {
         new File('dependencies.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonDeps))
     }
-    
+
     void loadJsonDependencies() {
         File f = new File('dependencies.json')
         if (f.exists()) {
             jsonDeps = new JsonSlurper().parseText(f.text)
         }
     }
-    
-         
+
+
     /**
-     * Used to collect dependency records recursively, 
+     * Used to collect dependency records recursively,
      * storing them at `result`.
      */
     class DepTracker {
 
         List<String> result = new LinkedList()
-        
+
         /**
-         * Recursive support for `findAllDependencies()` 
+         * Recursive support for `findAllDependencies()`
          */
         void trackDependencies(List<String> depList) {
             for (String guid in depList) {
                 if (!result.contains(guid)) {
-                    def obj = scripts.find { it.guid==guid }  
+                    def obj = scripts.find { it.guid==guid }
                     trackDependencies(obj.dependencies);
                     result.add(guid)
                 }
@@ -319,7 +319,7 @@ public class ApperyService {
         }
 
         /**
-         * Recursive support for `findAllScripts()` 
+         * Recursive support for `findAllScripts()`
          */
         void trackFolderScripts(String parentId) {
             List subfolders = folders.findAll { it.parentId==parentId }
@@ -329,26 +329,26 @@ public class ApperyService {
                 trackFolderScripts(folder._id);
             }
         }
-        
+
     }
-    
+
     DefaultTreeModel buildTree() {
         ScriptNode rootObj = new ScriptNode("Server Code")
         rootObj.isRoot = true
-        
+
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(rootObj);
         addFolders(root, null)
         DefaultTreeModel model = new DefaultTreeModel(root, true);
         return model
     }
-    
+
     /* See::
      *   https://docs.oracle.com/javase/7/docs/api/javax/swing/tree/DefaultMutableTreeNode.html
      */
     void addFolders(DefaultMutableTreeNode parent, String parentId) {
         // find all child folders for the given `parentId`
         List list = folders.findAll { it.parentId==parentId }
-        // create tree nodes for child folders 
+        // create tree nodes for child folders
         list.each { f ->
             ScriptNode obj = new ScriptNode(f.name)
             obj.data = f
@@ -367,14 +367,14 @@ public class ApperyService {
             parent.add(scriptNode)
         }
     }
-    
+
     void printStats() {
         List items = scripts.findAll { it.executable }
         int k = items.size()
         int n = scripts.size() - items.size()
         console("=== $k scripts and $n libraries found ===")
     }
-    
+
     /**
      * Called when the node is clicked in the tree.
      */
@@ -385,9 +385,9 @@ public class ApperyService {
         }
         curObj = node.getUserObject();
         String scriptName = curObj.name
-        
+
         setCurrentDependencies()
-        
+
         if (curObj.isScript) {
             File paramsFile = new File(paramsFolder, scriptName+'.params')
             dashboardFrame.paramsArea.setText(paramsFile.exists()? paramsFile.text : "")
@@ -396,13 +396,13 @@ public class ApperyService {
             dashboardFrame.paramsArea.setText("")
             dashboardFrame.paramsArea.setEditable(false)
         }
-        
+
         dashboardFrame.scriptNameLabel.setText("<html>${curScriptNameText()}</html>");
         //if (statusBk!=null) {
         dashboardFrame.scriptNamePanel.setBackground(UIManager.getColor("Panel.background"));
         dashboardFrame.scriptNameLabel.setForeground(UIManager.getColor("Panel.foreground"));
-        
-        
+
+
         dashboardFrame.downloadButton.setEnabled(true)
         dashboardFrame.saveButton.setEnabled(false)
         boolean scriptExists = new File(scriptName+'.js').exists()
@@ -412,32 +412,32 @@ public class ApperyService {
         File successFile = new File(fixturesFolder + '/' + scriptName + '/' + scriptName+'.success.json')
         dashboardFrame.echoButton.setEnabled(successFile.exists())
         dashboardFrame.testButton.setEnabled(successFile.exists())
-        
+
         buildParamList();
     }
-    
+
     String curScriptNameText() {
         String type = curObj.isScript? "script" : "folder"
         return "<b>${xmp(curObj.name)}</b> $type"
     }
-    
+
     String curParamsText() {
-        File f = new File(paramsFolder, curObj.name+'.params')        
+        File f = new File(paramsFolder, curObj.name+'.params')
         if (f.exists()) {
             return f.text
         } else {
             return ""
         }
     }
-        
+
     /**
-     * Instead of running `processDownload()` directly on click, 
+     * Instead of running `processDownload()` directly on click,
      * we delegate it to `BatchRunner`  that implements `SwingWorker`.
      * @see #downloadProcess()
      */
     void buttonDownload() {
         BatchRunner batchRunner = new BatchRunner()
-        batchRunner.apperyClient = this
+        batchRunner.apperyService = this
         batchRunner.mode = BatchRunnerMode.downloadMode
         batch_runner = batchRunner
         batchRunner.execute()
@@ -449,7 +449,7 @@ public class ApperyService {
             scripts[i].isDownloaded = false
         }
     }
-    
+
     /**
      * `Download` button clicked
      */
@@ -458,11 +458,11 @@ public class ApperyService {
         try {
             ensureFolder(paramsFolder)
             markAsNotDownloaded(scripts)
-            
+
             if (curObj.isScript) {
                 downloadScript(curObj.data as ScriptJson)
                 dashboardFrame.runButton.setEnabled(true)
-            } else 
+            } else
             if (curObj.isRoot) {
                 console "--- Downloading all scripts ---"
                 for (int i=0; i<scripts.size(); i++) {
@@ -472,22 +472,22 @@ public class ApperyService {
             } else {
                 // is folder
                 List subscripts = findAllScripts(curObj.data._id)
-                console "--- Downloading ${subscripts.size()} scripts from `${curObj.name}` folder ---" 
+                console "--- Downloading ${subscripts.size()} scripts from `${curObj.name}` folder ---"
                 for (def script in subscripts) {
                     downloadScript(script as ScriptJson)
                 }
                 //console "--- Done ---"
             }
-            
+
             saveJsonDependencies()
-            
+
         } catch (Exception e) {
             handleException(e, null);
         } finally {
             dashboardFrame.downloadButton.setEnabled(true)
         }
     }
-    
+
     void handleException(Exception e, ServerCode sc) {
         if (sc!=null && (e instanceof ScriptException)) {
             sc.printScriptError(e)
@@ -495,26 +495,26 @@ public class ApperyService {
             e.printStackTrace();
         }
     }
-    
+
     void ensureFixturesFolder() {
         ensureFolder(fixturesFolder)
     }
 
     void buttonLogs() {
         BatchRunner batchRunner = new BatchRunner()
-        batchRunner.apperyClient = this
+        batchRunner.apperyService = this
         batchRunner.mode = BatchRunnerMode.logsMode
         batch_runner = batchRunner
         batchRunner.execute()
         batch_runner = null
     }
-    
+
     void processLogs() {
         dashboardFrame.logsButton.setEnabled(false)
         try {
             if (curObj.isScript) {
                 loadLogs(curObj.data as ScriptJson)
-            } else 
+            } else
             if (curObj.isRoot) {
                 for (int i=0; i<scripts.size(); i++) {
                     loadLogs(scripts[i] as ScriptJson)
@@ -522,32 +522,32 @@ public class ApperyService {
             } else {
                 // is folder
                 List subscripts = findAllScripts(curObj.data._id)
-                console "--- Downloading ${subscripts.size()} logs from `${curObj.name}` folder ---" 
+                console "--- Downloading ${subscripts.size()} logs from `${curObj.name}` folder ---"
                 for (def script in subscripts) {
                     loadLogs(script as ScriptJson)
                 }
                 //console "--- Done ---"
             }
-            
+
         } catch (Exception e) {
             handleException(e, null);
         } finally {
             dashboardFrame.logsButton.setEnabled(true)
         }
     }
-    
+
     /**
      * Starts `ServerCode` script in parallel thread.
      */
     void buttonRun() {
         BatchRunner batchRunner = new BatchRunner()
-        batchRunner.apperyClient = this
+        batchRunner.apperyService = this
         batchRunner.mode = BatchRunnerMode.runMode
         batch_runner = batchRunner
         batchRunner.execute()
-        batch_runner = null        
+        batch_runner = null
     }
-    
+
     /**
      * Runs `ServerCode` script in parallel thread.
      */
@@ -576,26 +576,26 @@ public class ApperyService {
             }
             dashboardFrame.echoButton.setEnabled(true)
             dashboardFrame.testButton.setEnabled(true)
-            
+
         } catch (Exception e) {
             handleException(e, sc);
         } finally {
             dashboardFrame.runButton.setEnabled(true)
         }
     }
-    
+
     /**
      * Starts `ServerCode` echo in parallel thread.
      */
     void buttonEcho() {
         BatchRunner batchRunner = new BatchRunner()
-        batchRunner.apperyClient = this
+        batchRunner.apperyService = this
         batchRunner.mode = BatchRunnerMode.echoMode
         batch_runner = batchRunner
         batchRunner.execute()
-        batch_runner = null        
+        batch_runner = null
     }
-    
+
     /**
      * Runs `ServerCode` echo in parallel thread.
      */
@@ -621,24 +621,24 @@ public class ApperyService {
 
             } catch (TestFailedException et) {
             }
-            
+
         } catch (Exception e) {
             handleException(e, sc);
         } finally {
             dashboardFrame.echoButton.setEnabled(true)
         }
     }
-    
+
     /**
      * Starts `ServerCode` test in parallel thread.
      */
     void buttonTest() {
         BatchRunner batchRunner = new BatchRunner()
-        batchRunner.apperyClient = this
+        batchRunner.apperyService = this
         batchRunner.mode = BatchRunnerMode.testMode
         batch_runner = batchRunner
         batchRunner.execute()
-        batch_runner = null        
+        batch_runner = null
     }
 
     /**
@@ -679,7 +679,7 @@ public class ApperyService {
                 dashboardFrame.scriptNameLabel.setForeground(new java.awt.Color(102, 153, 58));
                 dashboardFrame.scriptNameLabel.setText("<html>${curScriptNameText()} - TEST SUCCEEDED</html>");
             }
-            
+
         } catch (Exception e) {
             handleException(e, sc);
         } finally {
@@ -699,7 +699,7 @@ public class ApperyService {
         }
         return text
     }
-    
+
     /**
      * Saves `.params` file for `curObj`.
      */
@@ -721,7 +721,7 @@ public class ApperyService {
         dashboardFrame.testButton.setEnabled(true);
         dashboardFrame.logsButton.setEnabled(true);
     }
-    
+
     /**
      * Checks ApperyDB if we are running the latest program version
      * and updates `scriptNameLabel` in `DashboardFrame` appropriately.
@@ -734,17 +734,17 @@ public class ApperyService {
             .addParameter("where", '{"name":"version"}')
         HttpGet httpGet = new HttpGet(uriBuilder.build());
         httpGet.addHeader(new BasicHeader("X-Appery-Database-Id", "58ad4ff2e4b0e91ec571ce2d"));
-        HttpResponse response = httpclient.execute(httpGet);
+        HttpResponse response = apperyClient.httpclient.execute(httpGet);
         String result = ""
         try {
             int status = response.getStatusLine().getStatusCode();
             assert status==200
-            result = EntityUtils.toString(response.getEntity());  
-            def json = jsonSlurper.parseText(result)
+            result = EntityUtils.toString(response.getEntity());
+            def json = apperyClient.jsonSlurper.parseText(result)
             String curVersion = json[0].value
             if (curVersion!=apperyUnitVersion) {
                 dashboardFrame.scriptNameLabel.setText(
-                    '<html><b>ApperyUnit</b> Version ' + Utils.apperyUnitVersion + 
+                    '<html><b>ApperyUnit</b> Version ' + Utils.apperyUnitVersion +
                     ' - New version ' + curVersion + ' available, visit ' +
                     '<a href="http://apperyunit.app.appery.io/">apperyunit.app.appery.io</a> to download</html>');
                 dashboardFrame.scriptNameLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -762,9 +762,9 @@ public class ApperyService {
             response.close()
         }
     }
-    
+
     /**
-     * Fills `paramList` in `DashboardFrame` with 
+     * Fills `paramList` in `DashboardFrame` with
      * params info from `curObj`.
      */
     void buildParamList() {
@@ -776,6 +776,6 @@ public class ApperyService {
             dashboardFrame.paramList.ensureIndexIsVisible(0);
         }
     }
-    
+
 
 }

@@ -1,11 +1,7 @@
 package io.appery.apperyunit;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.text.DefaultCaret;
 import javax.swing.tree.TreeSelectionModel;
@@ -15,19 +11,20 @@ import javax.swing.tree.TreeSelectionModel;
  */
 public class DashboardFrame extends javax.swing.JFrame {
 
-    ApperyService appery; 
+    ApperyService appery = new ApperyService();
             
     /**
      * Creates new form DashboardFrame
      */
     public DashboardFrame() {
-        appery = new ApperyService(this);
         initComponents();
         setLocationRelativeTo(null);
         Utils.setIcon(this);
                 
         DefaultCaret caret = (DefaultCaret)consoleArea.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+
+        appery.init(this);
     }
 
     void createDashboard() {

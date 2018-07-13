@@ -6,32 +6,32 @@ import java.util.List;
 import javax.swing.*;
 
 class BatchRunner extends SwingWorker<Void, String> {
-    
-    ApperyService appery;
+
+    ApperyService apperyService;
     BatchRunnerMode mode;
-    
+
     @Override
     protected Void doInBackground() {
         switch (mode) {
             case BatchRunnerMode.downloadMode:
-                appery.processDownload();
+                apperyService.processDownload();
                 break;
             case BatchRunnerMode.runMode:
-                appery.processRun();
+                apperyService.processRun();
                 break;
             case BatchRunnerMode.echoMode:
-                appery.processEcho();
+                apperyService.processEcho();
                 break;
             case BatchRunnerMode.testMode:
-                appery.processTest();
+                apperyService.processTest();
                 break;
             case BatchRunnerMode.logsMode:
-                appery.processLogs();
+                apperyService.processLogs();
                 break;
         }
         return null;
     }
-    
+
     @Override
     protected void process(List<String> msgs) {
     	StringBuffer sb = new StringBuffer();
@@ -40,7 +40,7 @@ class BatchRunner extends SwingWorker<Void, String> {
         }
         console_area.append(sb.toString());
     }
-    
+
     public void print(String msg) {
         publish(msg);
     }

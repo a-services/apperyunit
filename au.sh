@@ -1,6 +1,6 @@
 # Run ApperyUnit
 
-AU="java -cp apperyunit-1.00.jar io.appery.apperyunit.au"
+AU="java -cp apperyunit-1.01.jar io.appery.apperyunit.au"
 
 case "$1" in
 	"e" ) $AU helloappery.js echo

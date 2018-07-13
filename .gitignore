@@ -5,3 +5,10 @@ README.html
 /.nb-gradle/
 /build/
 /fixtures/
+/bin/
+
+.classpath
+.project
+.settings/
+
+.vscode/

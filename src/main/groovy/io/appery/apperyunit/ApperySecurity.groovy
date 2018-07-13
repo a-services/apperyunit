@@ -1,23 +1,16 @@
 package io.appery.apperyunit;
 
-import java.io.IOException;
-import java.util.*;
 import java.text.*;
 import java.util.regex.*;
-import org.apache.http.impl.client.*;
-import org.apache.http.client.methods.*;
+
 import org.apache.http.*;
-import org.apache.http.util.*;
 import org.apache.http.client.*;
-import org.apache.http.client.utils.*;
 import org.apache.http.client.entity.*;
+import org.apache.http.client.methods.*;
+import org.apache.http.client.utils.*;
+import org.apache.http.impl.client.*;
 import org.apache.http.message.*;
-
-import org.apache.http.client.utils.URIBuilder;
-import java.net.URISyntaxException;
-import org.apache.http.entity.StringEntity;
-
-import groovy.json.JsonSlurper;
+import org.apache.http.util.*;
 
 /**
  * Performs SAML login into Appery.io site.

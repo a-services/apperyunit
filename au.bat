@@ -1,5 +1,5 @@
 @echo off
-set AU=java -cp apperyunit-1.00.jar io.appery.apperyunit.au
+set AU=java -cp apperyunit-1.01.jar io.appery.apperyunit.au
 
 if "%1%"=="e" (
 	%AU% helloappery.js echo 

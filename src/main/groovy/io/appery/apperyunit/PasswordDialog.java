@@ -1,8 +1,5 @@
 package io.appery.apperyunit;
 
-import java.awt.Toolkit;
-import javax.swing.ImageIcon;
-
 /**
  * Login form to enter Appery credentials.
  */
