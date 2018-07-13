@@ -23,25 +23,25 @@ import org.apache.http.util.EntityUtils;
 import groovy.json.JsonSlurper;
 
 /**
- * Access to Appery.io REST API services. 
+ * Access to Appery.io REST API services.
  * Java part.
  */
 public class ApperyRestClient {
 
     CloseableHttpClient httpclient = HttpClients.createDefault();
 
-    String host; 
+    String host;
 
     JsonSlurper jsonSlurper = new JsonSlurper();
-        
+
     ApperyRestClient() {
         host = "appery.io";
         String envHost = System.getenv("AU_BACKEND");
         if (envHost!=null) {
             host = envHost;
-        } 
+        }
     }
-    
+
     void setHost(String host) {
         this.host = host;
     }
@@ -49,7 +49,7 @@ public class ApperyRestClient {
     /**
      * Performs HTTP GET.
      */
-    String makeGet(String serviceUrl, Map<String, String> params) 
+    String makeGet(String serviceUrl, Map<String, String> params)
            throws ApperyUnitException, IOException {
         HttpGet req;
         try {
@@ -58,7 +58,7 @@ public class ApperyRestClient {
                 params.forEach((key,value) -> ub.setParameter(key, value));
             }
             req = new HttpGet(ub.build());
-            
+
         } catch(URISyntaxException e) {
             throw new ApperyUnitException("[URISyntaxException] " + e.getMessage());
         }
@@ -73,7 +73,7 @@ public class ApperyRestClient {
             }
             result = EntityUtils.toString(response.getEntity());
             if (result.startsWith("<HTML>")) {
-                throw new ApperyUnitException("Authentication error");
+                throw new ApperyUnitException("SAML authentication error");
             }
         } finally {
             response.close();
@@ -84,7 +84,7 @@ public class ApperyRestClient {
     /**
      * Performs HTTP GET.
      */
-    String makeGet(String serviceUrl) 
+    String makeGet(String serviceUrl)
            throws ApperyUnitException, IOException {
         return makeGet(serviceUrl, null);
     }
@@ -92,28 +92,28 @@ public class ApperyRestClient {
     /**
      * Add parameters to GET URL.
      */
-    static String addGetParams(String url, Map<String, String> parameters) 
+    static String addGetParams(String url, Map<String, String> parameters)
                   throws MalformedURLException, URISyntaxException {
         URL u = new URL(url);
         URIBuilder uriBuilder = new URIBuilder()
                 .setScheme(u.getProtocol())
                 .setHost(u.getHost())
                 .setPath(u.getPath());
-                
-        parameters.entrySet().stream().forEach(e -> 
+
+        parameters.entrySet().stream().forEach(e ->
             uriBuilder.addParameter(e.getKey(), e.getValue())
         );
         /* parameters.each { name, value ->
             uriBuilder.addParameter(name, value);
         } */
-        
+
         return uriBuilder.build().toString();
     }
-    
+
     /**
      * Performs HTTP POST.
      */
-    String makePost(String serviceUrl, String data) 
+    String makePost(String serviceUrl, String data)
            throws ApperyUnitException, IOException {
         HttpPost req = new HttpPost("https://" + host + serviceUrl);
         req.addHeader(new BasicHeader("Content-Type", "application/json"));
@@ -130,7 +130,7 @@ public class ApperyRestClient {
             }
             result = EntityUtils.toString(response.getEntity());
             if (result.startsWith("<HTML>")) {
-                throw new ApperyUnitException("Authentication error");
+                throw new ApperyUnitException("SAML authentication error");
             }
         } finally {
             response.close();
@@ -141,7 +141,7 @@ public class ApperyRestClient {
     /**
      * Performs HTTP PUT.
      */
-    String makePut(String serviceUrl, String data) 
+    String makePut(String serviceUrl, String data)
            throws ApperyUnitException, IOException {
         HttpPut req = new HttpPut("https://" + host + serviceUrl);
         req.addHeader(new BasicHeader("Content-Type", "application/json"));
@@ -158,19 +158,19 @@ public class ApperyRestClient {
             }
             result = EntityUtils.toString(response.getEntity());
             if (result.startsWith("<HTML>")) {
-                throw new ApperyUnitException("Authentication error");
+                throw new ApperyUnitException("SAML authentication error");
             }
         } finally {
             response.close();
         }
         return result;
     }
-    
+
     class LogEntry {
         String time;
         String text;
     }
-    
+
     /**
      * Load script logs from Appery.io.
      */

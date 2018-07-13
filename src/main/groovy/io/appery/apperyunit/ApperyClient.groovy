@@ -18,31 +18,33 @@ import java.text.*
 import javax.script.ScriptException
 
 /**
- * Access to Appery.io REST API services. 
+ * Access to Appery.io REST API services.
  * Groovy part.
  */
 public class ApperyClient extends ApperyRestClient {
 
     /**
-     * Download servercode script.
+     * Performs SAML login with default credentials.
      */
-    def downloadScript(String scriptGuid) {
-        try {
-            String body = makeGet('/bksrv/rest/1/code/admin/script/' + scriptGuid)
-            return jsonSlurper.parseText(body)
-        } catch(Exception e) {
-            console("[ERROR] " + e);
-            return null;
+    boolean doLogin(String targetPath) {
+        String auDebug = System.getenv("AU_DEBUG");
+        if (auDebug==null) {
+            return false;
         }
+        String[] creds = auDebug.split(":");
+        if (creds.length!=2) {
+            return false;
+        }
+        return doLogin(creds[0], creds[1], "/bksrv/")
     }
 
     /**
      * Performs SAML login to access Appery.io backend funnctions.
      */
     boolean doLogin(String username, String password) {
-        return doLogin(username, password, "/bksrv/") 
+        return doLogin(username, password, "/bksrv/")
     }
-    
+
     /**
      * Performs SAML login into Appery.io site.
      */
@@ -57,42 +59,41 @@ public class ApperyClient extends ApperyRestClient {
     }
 
     /**
-     * Returnns list of server code scripts and libraries 
+     * Download servercode script.
+     */
+    def downloadScript(String scriptGuid) {
+        String body = makeGet('/bksrv/rest/1/code/admin/script/' + scriptGuid)
+        return jsonSlurper.parseText(body)
+    }
+
+
+    /**
+     * Returnns list of server code scripts and libraries
      * in Appery.io workspace. Metainformation about scripts included.
      */
     def loadServerCodesList() {
-        try {
-            String body = makeGet('/bksrv/rest/1/code/admin/script/?light=true')
-            return jsonSlurper.parseText(body)
-        } catch(ApperyUnitException e) {
-            console("[ERROR] " + e);
-            return null;
-        }
-    }	
+        String body = makeGet('/bksrv/rest/1/code/admin/script/?light=true')
+        return jsonSlurper.parseText(body)
+    }
 
     /**
-     * Returnns list of server code folders 
+     * Returnns list of server code folders
      * in Appery.io workspace. Metainformation included.
      */
     def loadServerCodesFolders() {
-        try {
-            String body = makeGet('/bksrv/rest/1/code/admin/folders/')
-            return jsonSlurper.parseText(body)
-        } catch(ApperyUnitException e) {
-            console("[ERROR] " + e);
-            return null;
-        }
-    }	
+        String body = makeGet('/bksrv/rest/1/code/admin/folders/')
+        return jsonSlurper.parseText(body)
+    }
 
-    
+
     /**
-     * Get available templates to create projects in Appery.io workspace. 
+     * Get available templates to create projects in Appery.io workspace.
      */
     def loadProjectTemplates() {
         String result = makeGet('/app/rest/html5/plugin/wizardProject')
         return jsonSlurper.parseText(result)
     }
-    
+
     /**
      * Create project in Appery.io workspace.
      */
@@ -101,7 +102,7 @@ public class ApperyClient extends ApperyRestClient {
         String result = makePost('/app/rest/projects', data)
         return jsonSlurper.parseText(result)
     }
-    
+
     /**
      * Get list of existing projects in Appery.io workspace.
      */
@@ -109,7 +110,7 @@ public class ApperyClient extends ApperyRestClient {
         String result = makeGet('/app/rest/projects')
         return jsonSlurper.parseText(result)
     }
-    
+
     /**
      * Get information about project in Appery.io workspace.
      */
@@ -117,7 +118,7 @@ public class ApperyClient extends ApperyRestClient {
         String result = makeGet('/app/rest/html5/project', ['guid':guid])
         return jsonSlurper.parseText(result)
     }
-    
+
     /**
      * Load list of assets for Appery.io project.
      */
@@ -126,7 +127,7 @@ public class ApperyClient extends ApperyRestClient {
         String result = makePost('/app/rest/html5/project/' + projectGuid + '/asset/data', data)
         return jsonSlurper.parseText(result)
     }
-    
+
     /**
      * Update list of assets in Appery.io project.
      */
@@ -135,5 +136,10 @@ public class ApperyClient extends ApperyRestClient {
         String result = makePut('/app/rest/html5/project/' + projectGuid + '/asset/data', data)
         return result
     }
-            
+
+    void saveJson(jsonData, String fname) {
+        new File(fname).text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonData))
+        console "`$fname` saved"
+    }
+
 }

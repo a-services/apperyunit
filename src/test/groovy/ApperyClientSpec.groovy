@@ -29,6 +29,7 @@ class ApperyClientSpec extends Specification {
     def proj = loadProject("PWA Pizza")
     assert proj!=null
     
+    /*
     def srcInfo = loadSourceInfo()
     assert srcInfo!=null
     
@@ -38,6 +39,7 @@ class ApperyClientSpec extends Specification {
     String fname = 'build/home_src.html'
     new File(fname).text = body
     println "-- File saved: `$fname`"
+    */
   }
 
   def loadSourceInfo() {
