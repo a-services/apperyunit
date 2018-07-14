@@ -23,6 +23,20 @@ import javax.script.ScriptException
  */
 public class ApperyClient extends ApperyRestClient {
 
+    int metaCount = 0;
+    String scriptName;
+    String outFolder;
+    boolean echoMode = false;    
+    
+    ApperyClient trackResults(String scriptName) {
+        this.scriptName = scriptName[0..-4] // without '.js' extension
+        outFolder = fixturesFolder + '/' + this.scriptName
+        ensureFolder(outFolder)
+
+        echoMode = echo_mode 
+        return this       
+	}
+	
     /**
      * Performs SAML login with default credentials.
      */
@@ -35,7 +49,7 @@ public class ApperyClient extends ApperyRestClient {
         if (creds.length!=2) {
             return false;
         }
-        return doLogin(creds[0], creds[1], "/bksrv/")
+        return doLogin(creds[0], creds[1], targetPath)
     }
 
     /**
@@ -50,13 +64,61 @@ public class ApperyClient extends ApperyRestClient {
      */
     boolean doLogin(String username, String password, String targetPath) {
         try {
-            new ApperySecurity(this).doLogin(username, password, targetPath);
+			if (!echoMode) {
+                new ApperySecurity(this).doLogin(username, password, targetPath);
+		    } else {
+				console "ECHO MODE: Login success"
+			}
             return true;
         } catch(ApperyUnitException e) {
             console("[ERROR] " + e);
             return false;
         }
     }
+
+    final String metaFileName = "meta-";
+    
+    /**
+     * Get list of existing projects in Appery.io workspace.
+     */
+    String loadProjectList() {
+		metaCount++;
+		String fname = metaFileName+metaCount+'.json'
+		String result;
+		if (echoMode) {
+			console "ECHO MODE: reading from $fname"
+			result = new File(outFolder, fname).text
+		} else {
+            result = makeGet('/app/rest/projects');
+            if (outFolder!=null) {
+				new File(outFolder, fname).text = JsonOutput.prettyPrint(result);
+				console "List of projects saved to $ital`$fname`$norm"
+			}
+		}
+		return result
+        //return jsonSlurper.parseText(result)
+    }
+
+    /**
+     * Get information about project in Appery.io workspace.
+     */
+    String loadProjectInfo(String guid) {
+		metaCount++;
+		String fname = metaFileName+metaCount+'.json'
+		String result;
+		if (echoMode) {
+			console "ECHO MODE: reading from $fname"
+			result = new File(outFolder, fname).text
+		} else {
+            result = makeGet('/app/rest/html5/project', ['guid':guid])
+            if (outFolder!=null) {
+				new File(outFolder, fname).text = JsonOutput.prettyPrint(result);
+				console "Project information saved to $ital`$fname`$norm"
+			}
+		}
+		return result
+    }
+
 
     /**
      * Download servercode script.
@@ -100,22 +162,6 @@ public class ApperyClient extends ApperyRestClient {
     def createApperyProject(String projectName, int projectType) {
         String data = JsonOutput.toJson(["name":projectName,"templateId":projectType])
         String result = makePost('/app/rest/projects', data)
-        return jsonSlurper.parseText(result)
-    }
-
-    /**
-     * Get list of existing projects in Appery.io workspace.
-     */
-    def loadProjectList() {
-        String result = makeGet('/app/rest/projects')
-        return jsonSlurper.parseText(result)
-    }
-
-    /**
-     * Get information about project in Appery.io workspace.
-     */
-    def loadProjectInfo(String guid) {
-        String result = makeGet('/app/rest/html5/project', ['guid':guid])
         return jsonSlurper.parseText(result)
     }
 

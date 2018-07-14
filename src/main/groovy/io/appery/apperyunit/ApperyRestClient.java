@@ -1,6 +1,6 @@
 package io.appery.apperyunit;
 
-import static io.appery.apperyunit.Utils.console;
+import static io.appery.apperyunit.Utils.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -35,6 +35,7 @@ public class ApperyRestClient {
     JsonSlurper jsonSlurper = new JsonSlurper();
 
     ApperyRestClient() {
+		// set host
         host = "appery.io";
         String envHost = System.getenv("AU_BACKEND");
         if (envHost!=null) {
@@ -42,8 +43,12 @@ public class ApperyRestClient {
         }
     }
 
-    void setHost(String host) {
+    public void setHost(String host) {
         this.host = host;
+    }
+
+    public String getHost() {
+        return host;
     }
 
     /**
