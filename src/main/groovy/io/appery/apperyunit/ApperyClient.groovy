@@ -25,8 +25,16 @@ public class ApperyClient extends ApperyRestClient {
 
     int metaCount = 0;
     String scriptName;
+    
+    /**
+     * ApperyClient will save REST response into `outFolder`
+     * if it is not null. 
+     */
     String outFolder;
+    
     boolean echoMode = false;    
+    
+    final String metaFileName = "meta-";
     
     /**
      * Additional initialization when object is used from JavaScript. 
@@ -40,6 +48,8 @@ public class ApperyClient extends ApperyRestClient {
         return this       
 	}
 	
+    // -------------- Login
+
     /**
      * Performs SAML login with default credentials.
      */
@@ -79,102 +89,43 @@ public class ApperyClient extends ApperyRestClient {
         }
     }
 
-    final String metaFileName = "meta-";
-    
+    // -------------- Appery projects
+
     /**
      * Get list of existing projects in Appery.io workspace.
      */
     String loadProjectList() {
-		metaCount++;
-		String fname = metaFileName+metaCount+'.json'
-		String result;
-		if (echoMode) {
-			console "ECHO MODE: reading from $fname"
-			result = new File(outFolder, fname).text
-		} else {
-            result = makeGet('/app/rest/projects');
-            if (outFolder!=null) {
-				new File(outFolder, fname).text = JsonOutput.prettyPrint(result);
-				console "List of projects saved to $ital`$fname`$norm"
-			}
-		}
-		return result
-        //return jsonSlurper.parseText(result)
+        return traceGet('List of projects', '/app/rest/projects', null);
     }
 
     /**
      * Get information about project in Appery.io workspace.
      */
     String loadProjectInfo(String guid) {
-		metaCount++;
-		String fname = metaFileName+metaCount+'.json'
-		String result;
-		if (echoMode) {
-			console "ECHO MODE: reading from $fname"
-			result = new File(outFolder, fname).text
-		} else {
-            result = makeGet('/app/rest/html5/project', ['guid':guid])
-            if (outFolder!=null) {
-				new File(outFolder, fname).text = JsonOutput.prettyPrint(result);
-				console "Project information saved to $ital`$fname`$norm"
-			}
-		}
-		return result
+        return traceGet('Project information', '/app/rest/projects', '/app/rest/html5/project', ['guid':guid]);
     }
-
-
-    /**
-     * Download servercode script.
-     */
-    def downloadScript(String scriptGuid) {
-        String body = makeGet('/bksrv/rest/1/code/admin/script/' + scriptGuid)
-        return jsonSlurper.parseText(body)
-    }
-
-
-    /**
-     * Returnns list of server code scripts and libraries
-     * in Appery.io workspace. Metainformation about scripts included.
-     */
-    def loadServerCodesList() {
-        String body = makeGet('/bksrv/rest/1/code/admin/script/?light=true')
-        return jsonSlurper.parseText(body)
-    }
-
-    /**
-     * Returnns list of server code folders
-     * in Appery.io workspace. Metainformation included.
-     */
-    def loadServerCodesFolders() {
-        String body = makeGet('/bksrv/rest/1/code/admin/folders/')
-        return jsonSlurper.parseText(body)
-    }
-
 
     /**
      * Get available templates to create projects in Appery.io workspace.
      */
-    def loadProjectTemplates() {
-        String result = makeGet('/app/rest/html5/plugin/wizardProject')
-        return jsonSlurper.parseText(result)
+    String loadProjectTemplates() {
+        return traceGet('Project templates', '/app/rest/html5/plugin/wizardProject', null);
     }
 
     /**
      * Create project in Appery.io workspace.
      */
-    def createApperyProject(String projectName, int projectType) {
+    String createApperyProject(String projectName, int projectType) {
         String data = JsonOutput.toJson(["name":projectName,"templateId":projectType])
-        String result = makePost('/app/rest/projects', data)
-        return jsonSlurper.parseText(result)
+        return tracePost('Project creation result', '/app/rest/projects', data)
     }
 
     /**
      * Load list of assets for Appery.io project.
      */
-    def loadProjectAssets(String projectGuid, List<String> assets) {
+    String loadProjectAssets(String projectGuid, List<String> assets) {
         String data = JsonOutput.toJson(["assets": assets.collect { ['id':it] }])
-        String result = makePost('/app/rest/html5/project/' + projectGuid + '/asset/data', data)
-        return jsonSlurper.parseText(result)
+        return tracePost('List of assets', '/app/rest/html5/project/' + projectGuid + '/asset/data', data)
     }
 
     /**
@@ -182,8 +133,73 @@ public class ApperyClient extends ApperyRestClient {
      */
     String updateProjectAssets(String projectGuid, assetsData) {
         String data = JsonOutput.toJson(assetsData)
-        String result = makePut('/app/rest/html5/project/' + projectGuid + '/asset/data', data)
-        return result
+        return tracePut('List of assets update result', '/app/rest/html5/project/' + projectGuid + '/asset/data', data)
+    }
+
+    // -------------- Server code scripts
+
+    /**
+     * Returns list of server code scripts and libraries
+     * in Appery.io workspace. Metainformation about scripts included.
+     */
+    String loadServerCodesList() {
+        return traceGet('List of server code scripts and libraries', '/bksrv/rest/1/code/admin/script/?light=true', null);
+    }
+
+    /**
+     * Returns list of server code folders
+     * in Appery.io workspace. Metainformation included.
+     */
+    String loadServerCodesFolders() {
+        return traceGet('List of server code folders', '/bksrv/rest/1/code/admin/folders/', null);
+    }
+
+    /**
+     * Download server code script.
+     */
+    String downloadScript(String scriptGuid) {
+        return traceGet('Server code script', '/bksrv/rest/1/code/admin/script/' + scriptGuid, null);
+    }
+
+    // -------------- Utils
+
+    String traceGet(String title, String url, Map<String, String> params) {
+        return traceMeta(title, url, params, 'get');
+    }
+
+    String tracePost(String title, String url, Map<String, String> params) {
+        return traceMeta(title, url, params, 'post');
+    }
+
+    String tracePut(String title, String url, Map<String, String> params) {
+        return traceMeta(title, url, params, 'put');
+    }
+
+    String traceMeta(String title, String url, Map<String, String> params, String method) {
+		metaCount++;
+		String fname = metaFileName+metaCount+'.json'
+		String result;
+		if (echoMode) {
+			console "ECHO MODE: reading from $fname"
+			result = new File(outFolder, fname).text
+		} else {
+            switch (method) {
+                case 'get':
+                    result = makeGet(url, params);
+                    break;
+                case 'post':
+                    result = makePost(url, params);
+                    break;
+                case 'put':
+                    result = makePut(url, params);
+                    break;
+            }
+            if (outFolder!=null) {
+				new File(outFolder, fname).text = JsonOutput.prettyPrint(result);
+				console "$title saved to $ital`$fname`$norm"
+			}
+		}
+		return result
     }
 
     void saveJson(jsonData, String fname) {

@@ -86,7 +86,7 @@ public class ApperyService {
         if (!script.isDownloaded) {
             script.isDownloaded = true
             String scriptName = script.name
-            def details = apperyClient.downloadScript(script.guid)
+            def details = apperyClient.jsonSlurper.parseText(apperyClient.downloadScript(script.guid));
             File f =  new File(scriptName + '.js')
             /*
             if (!overwrite && f.exists()) {
@@ -127,11 +127,11 @@ public class ApperyService {
     }
 
     void loadScriptList() {
-        scripts = apperyClient.loadServerCodesList();
+        scripts = apperyClient.jsonSlurper.parseText(apperyClient.loadServerCodesList());
     }
 
     void loadFolders() {
-    	folders = apperyClient.loadServerCodesFolders();
+    	folders = apperyClient.jsonSlurper.parseText(apperyClient.loadServerCodesFolders());
     }
 
     /**
@@ -292,7 +292,7 @@ public class ApperyService {
     void loadJsonDependencies() {
         File f = new File('dependencies.json')
         if (f.exists()) {
-            jsonDeps = new JsonSlurper().parseText(f.text)
+            jsonDeps = apperyClient.jsonSlurper.parseText(f.text)
         }
     }
 
@@ -691,7 +691,7 @@ public class ApperyService {
      */
     String prettyPrintParams(String text) {
         try {
-            text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonSlurper.parseText(text)))
+            text = JsonOutput.prettyPrint(JsonOutput.toJson(apperyClient.jsonSlurper.parseText(text)))
         } catch (JsonException e) {
             console '[ERROR] Cannot parse JSON parameters. Error message:'
             console "`"*80
