@@ -28,6 +28,9 @@ public class ApperyClient extends ApperyRestClient {
     String outFolder;
     boolean echoMode = false;    
     
+    /**
+     * Additional initialization when object is used from JavaScript. 
+     */
     ApperyClient trackResults(String scriptName) {
         this.scriptName = scriptName[0..-4] // without '.js' extension
         outFolder = fixturesFolder + '/' + this.scriptName
