@@ -24,28 +24,31 @@ import javax.script.ScriptException
 public class ApperyClient extends ApperyRestClient {
 
     int metaCount = 0;
-    String scriptName;
     
     /**
      * ApperyClient will save REST response into `outFolder`
-     * if it is not null. 
+     * if this property is not null.
+     * It is based on static `scriptName` property.
      */
     String outFolder;
+    static String scriptName;
     
     boolean echoMode = false;    
     
     final String metaFileName = "meta-";
     
     /**
-     * Additional initialization when object is used from JavaScript. 
+     * Create another instance of ApperyClient to use it from JavaScript. 
      */
-    ApperyClient trackResults(String scriptName) {
-        this.scriptName = scriptName[0..-4] // without '.js' extension
-        outFolder = fixturesFolder + '/' + this.scriptName
-        ensureFolder(outFolder)
+    static ApperyClient newInstance() {
+        assert script_name!=null
+        
+        ApperyClient ac = new ApperyClient();
+        ac.outFolder = fixturesFolder + '/' + script_name
+        ensureFolder(ac.outFolder)
 
-        echoMode = echo_mode 
-        return this       
+        ac.echoMode = echo_mode 
+        return ac       
 	}
 	
     // -------------- Login

@@ -235,7 +235,7 @@ class ServerCode {
 
         jsEngine.put('console', new ApperyConsole())
         jsEngine.put('ApperyCollection', new ApperyCollection(jsFile))
-        jsEngine.put('ApperyClient', new ApperyClient().trackResults(jsFile))
+        jsEngine.put('ApperyClient', ApperyClient.newInstance())
         //jsEngine.put('response', new ApperyResponse())
         long t = System.currentTimeMillis()
         jsEngine.eval(jsSource)
