@@ -105,7 +105,7 @@ public class ApperyClient extends ApperyRestClient {
      * Get information about project in Appery.io workspace.
      */
     String loadProjectInfo(String guid) {
-        return traceGet('Project information', '/app/rest/projects', '/app/rest/html5/project', ['guid':guid]);
+        return traceGet('Project information', '/app/rest/html5/project', ['guid':guid]);
     }
 
     /**
