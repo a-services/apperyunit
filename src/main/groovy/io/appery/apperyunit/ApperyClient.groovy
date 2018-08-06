@@ -134,9 +134,9 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Update list of assets in Appery.io project.
      */
-    String updateProjectAssets(String projectGuid, assetsData) {
+    String updateProjectAssets(String projectGuid, List<String> assetsData) {
         String data = JsonOutput.toJson(assetsData)
-        return tracePut('List of assets update result', '/app/rest/html5/project/' + projectGuid + '/asset/data', data)
+        return tracePut('List of assets update result', '/app/rest/html5/project/' + projectGuid + '/asset/data', JsonOutput.toJson(data))
     }
 
     // -------------- Server code scripts
@@ -167,18 +167,20 @@ public class ApperyClient extends ApperyRestClient {
     // -------------- Utils
 
     String traceGet(String title, String url, Map<String, String> params) {
-        return traceMeta(title, url, params, 'get');
+        return traceMeta(title, url, params, null, 'get');
     }
 
-    String tracePost(String title, String url, Map<String, String> params) {
-        return traceMeta(title, url, params, 'post');
+    String tracePost(String title, String url, String body) {
+        return traceMeta(title, url, null, body, 'post');
     }
 
-    String tracePut(String title, String url, Map<String, String> params) {
-        return traceMeta(title, url, params, 'put');
+    String tracePut(String title, String url, String body) {
+        return traceMeta(title, url, null, body, 'put');
     }
 
-    String traceMeta(String title, String url, Map<String, String> params, String method) {
+    String traceMeta(String title, String url, 
+                     Map<String, String> params, String body, 
+                     String method) {
 		metaCount++;
 		String fname = metaFileName+metaCount+'.json'
 		String result;
@@ -191,10 +193,10 @@ public class ApperyClient extends ApperyRestClient {
                     result = makeGet(url, params);
                     break;
                 case 'post':
-                    result = makePost(url, params);
+                    result = makePost(url, body);
                     break;
                 case 'put':
-                    result = makePut(url, params);
+                    result = makePut(url, body);
                     break;
             }
             if (outFolder!=null) {
