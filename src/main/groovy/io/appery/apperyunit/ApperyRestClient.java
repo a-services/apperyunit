@@ -54,7 +54,7 @@ public class ApperyRestClient {
     /**
      * Performs HTTP GET.
      */
-    String makeGet(String serviceUrl, Map<String, String> params)
+    String makeGet(String serviceUrl, Map<String, String> params, Map<String, String> headers)
            throws ApperyUnitException, IOException {
         HttpGet req;
         try {
@@ -69,6 +69,9 @@ public class ApperyRestClient {
         }
         req.addHeader(new BasicHeader("Accept", "application/json"));
         req.addHeader(new BasicHeader("User-Agent", "AU-Test-Agent"));
+        if (headers!=null) {
+            headers.forEach((key,value) -> req.addHeader(new BasicHeader(key, value)));
+        }
         CloseableHttpResponse response = httpclient.execute(req);
         String result = "";
         try {
@@ -91,7 +94,7 @@ public class ApperyRestClient {
      */
     String makeGet(String serviceUrl)
            throws ApperyUnitException, IOException {
-        return makeGet(serviceUrl, null);
+        return makeGet(serviceUrl, null, null);
     }
 
     /**

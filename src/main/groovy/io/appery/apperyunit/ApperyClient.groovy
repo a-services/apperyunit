@@ -98,7 +98,7 @@ public class ApperyClient extends ApperyRestClient {
      * Get list of existing projects in Appery.io workspace.
      */
     String loadProjectList() {
-        return traceGet('List of projects', '/app/rest/projects', null);
+        return traceGet('List of projects', '/app/rest/projects');
     }
 
     /**
@@ -112,7 +112,7 @@ public class ApperyClient extends ApperyRestClient {
      * Get available templates to create projects in Appery.io workspace.
      */
     String loadProjectTemplates() {
-        return traceGet('Project templates', '/app/rest/html5/plugin/wizardProject', null);
+        return traceGet('Project templates', '/app/rest/html5/plugin/wizardProject');
     }
 
     /**
@@ -146,7 +146,7 @@ public class ApperyClient extends ApperyRestClient {
      * in Appery.io workspace. Metainformation about scripts included.
      */
     String loadServerCodesList() {
-        return traceGet('List of server code scripts and libraries', '/bksrv/rest/1/code/admin/script/?light=true', null);
+        return traceGet('List of server code scripts and libraries', '/bksrv/rest/1/code/admin/script/?light=true');
     }
 
     /**
@@ -154,32 +154,58 @@ public class ApperyClient extends ApperyRestClient {
      * in Appery.io workspace. Metainformation included.
      */
     String loadServerCodesFolders() {
-        return traceGet('List of server code folders', '/bksrv/rest/1/code/admin/folders/', null);
+        return traceGet('List of server code folders', '/bksrv/rest/1/code/admin/folders/');
     }
 
     /**
      * Download server code script.
      */
     String downloadScript(String scriptGuid) {
-        return traceGet('Server code script', '/bksrv/rest/1/code/admin/script/' + scriptGuid, null);
+        return traceGet('Server code script', '/bksrv/rest/1/code/admin/script/' + scriptGuid);
+    }
+
+    // -------------- Database
+
+    /**
+     * Get list of existing databases in Appery.io workspace.
+     */
+    String loadDatabaseList() {
+        return traceGet('List of databases', '/bksrv/rest/1/admin/databases');
+    }
+
+    /**
+     * Get list of collections in Appery.io database.
+     */
+    String loadCollectionList(String dbid) {
+        return traceGet('List of collections', '/bksrv/rest/1/admin/collections', null, ['X-Appery-Database-Id':dbid]);
     }
 
     // -------------- Utils
 
+    String traceGet(String title, String url) {
+        return traceMeta(title, url, null, null, null, 'get');
+    }
+
     String traceGet(String title, String url, Map<String, String> params) {
-        return traceMeta(title, url, params, null, 'get');
+        return traceMeta(title, url, params, null, null, 'get');
+    }
+
+    String traceGet(String title, String url, Map<String, String> params, Map<String, String> headers) {
+        return traceMeta(title, url, params, headers, null, 'get');
     }
 
     String tracePost(String title, String url, String body) {
-        return traceMeta(title, url, null, body, 'post');
+        return traceMeta(title, url, null, null, body, 'post');
     }
 
     String tracePut(String title, String url, String body) {
-        return traceMeta(title, url, null, body, 'put');
+        return traceMeta(title, url, null, null, body, 'put');
     }
 
     String traceMeta(String title, String url, 
-                     Map<String, String> params, String body, 
+                     Map<String, String> params, 
+                     Map<String, String> headers,
+                     String body, 
                      String method) {
 		metaCount++;
 		String fname = metaFileName+metaCount+'.json'
@@ -190,7 +216,7 @@ public class ApperyClient extends ApperyRestClient {
 		} else {
             switch (method) {
                 case 'get':
-                    result = makeGet(url, params);
+                    result = makeGet(url, params, headers);
                     break;
                 case 'post':
                     result = makePost(url, body);
