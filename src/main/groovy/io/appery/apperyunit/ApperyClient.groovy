@@ -139,6 +139,40 @@ public class ApperyClient extends ApperyRestClient {
         return tracePut('List of assets update result', '/app/rest/html5/project/' + projectGuid + '/asset/data', JsonOutput.toJson(data))
     }
 
+    /**
+     * Load ids of project source files.
+     * @param projectGuidType  Project GUID concatenated with project type.
+     *                         Example: projectGuid + '/IONIC/'                
+     */
+    String loadSourceInfo(projectGuidType) {
+        try {
+            return traceGet('Source info', '/app/rest/html5/ide/source/read/' + projectGuidType);
+        } catch (ApperyUnitException e) {
+            return null;
+        }
+    }
+    
+    /**
+     * Load source file by id.
+     */
+    String loadSource(srcId) {
+        return makeGet('/app/rest/html5/ide/source/' + srcId + '/read/data');
+    }
+    
+    /**
+     * Get list of certificates in Appery.io workspace.
+     */
+    String loadCertificateList() {
+        return traceGet('List of certificates', '/app/rest/certificates');
+    }
+
+    /**
+     * Get information about certificate in Appery.io workspace.
+     */
+    String loadCertificateInfo(String uuid) {
+        return traceGet('List of certificates', '/app/rest/certificates/' + uuid);
+    }
+    
     // -------------- Server code scripts
 
     /**
@@ -236,6 +270,15 @@ public class ApperyClient extends ApperyRestClient {
     void saveJson(jsonData, String fname) {
         new File(fname).text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonData))
         console "`$fname` saved"
+    }
+
+    void saveFile(text, String fname) {
+        new File(fname).text = text
+        console "`$fname` saved"
+    }
+    
+    void delay(int ms) {
+        sleep(ms);
     }
 
 }
