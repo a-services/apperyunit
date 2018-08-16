@@ -134,9 +134,8 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Update list of assets in Appery.io project.
      */
-    String updateProjectAssets(String projectGuid, List<String> assetsData) {
-        String data = JsonOutput.toJson(assetsData)
-        return tracePut('List of assets update result', '/app/rest/html5/project/' + projectGuid + '/asset/data', JsonOutput.toJson(data))
+    String updateProjectAssets(String projectGuid, String assetsData) {
+        return tracePut('List of assets update result', '/app/rest/html5/project/' + projectGuid + '/asset/data', assetsData)
     }
 
     /**
