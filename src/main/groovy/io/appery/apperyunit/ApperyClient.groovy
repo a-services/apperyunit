@@ -213,6 +213,29 @@ public class ApperyClient extends ApperyRestClient {
         return traceGet('List of collections', '/bksrv/rest/1/admin/collections', null, ['X-Appery-Database-Id':dbid]);
     }
 
+    // -------------- API Express
+
+    /**
+     * Get list of AEX projects in Appery.io workspace.
+     */
+    String loadAexProjectList() {
+        return traceGet('List of AEX projects', '/apiexpress/rest/projects');
+    }
+
+    /**
+     * Returns list of AEX folders in Appery.io workspace
+     */
+    String loadAexFolders(String projectRootId) {
+        return traceGet('List of AEX folders', '/apiexpress/rest/folders/' + projectRootId + '/children');
+    }
+
+    /**
+     * Returns list of AEX services in project folder
+     */
+    String loadAexServices(String folderId) {
+        return traceGet('List of AEX services', '/apiexpress/rest/service/custom/' + folderId + '/children');
+    }
+    
     // -------------- Utils
 
     String traceGet(String title, String url) {
@@ -266,8 +289,8 @@ public class ApperyClient extends ApperyRestClient {
 		return result
     }
 
-    void saveJson(jsonData, String fname) {
-        new File(fname).text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonData))
+    void saveJson(String jsonData, String fname) {
+        new File(fname).text = JsonOutput.prettyPrint(jsonData); //JsonOutput.toJson(jsonData))
         console "`$fname` saved"
     }
 
