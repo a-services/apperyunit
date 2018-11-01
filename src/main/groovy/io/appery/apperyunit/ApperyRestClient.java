@@ -36,7 +36,7 @@ public class ApperyRestClient {
 
     ApperyRestClient() {
 		// set host
-        host = "appery.io";
+        host = "https://appery.io";
         String envHost = System.getenv("AU_BACKEND");
         if (envHost!=null) {
             host = envHost;
@@ -58,7 +58,7 @@ public class ApperyRestClient {
            throws ApperyUnitException, IOException {
         HttpGet req;
         try {
-            URIBuilder ub = new URIBuilder("https://" + host + serviceUrl);
+            URIBuilder ub = new URIBuilder(host + serviceUrl);
             if (params!=null) {
                 params.forEach((key,value) -> ub.setParameter(key, value));
             }
@@ -123,7 +123,7 @@ public class ApperyRestClient {
      */
     String makePost(String serviceUrl, String data)
            throws ApperyUnitException, IOException {
-        HttpPost req = new HttpPost("https://" + host + serviceUrl);
+        HttpPost req = new HttpPost(host + serviceUrl);
         req.addHeader(new BasicHeader("Content-Type", "application/json"));
         req.addHeader(new BasicHeader("Accept", "application/json"));
         req.addHeader(new BasicHeader("User-Agent", "AU-Test-Agent"));
@@ -151,7 +151,7 @@ public class ApperyRestClient {
      */
     String makePut(String serviceUrl, String data)
            throws ApperyUnitException, IOException {
-        HttpPut req = new HttpPut("https://" + host + serviceUrl);
+        HttpPut req = new HttpPut(host + serviceUrl);
         req.addHeader(new BasicHeader("Content-Type", "application/json"));
         req.addHeader(new BasicHeader("Accept", "application/json"));
         req.addHeader(new BasicHeader("User-Agent", "AU-Test-Agent"));
