@@ -20,11 +20,13 @@ public class ApperySecurity {
     ApperyClient apperyClient;
     CloseableHttpClient httpclient;
     String host;
+    String protocol;
 
     ApperySecurity(ApperyClient apperyClient) {
         this.apperyClient = apperyClient;
     	this.httpclient = apperyClient.httpclient;
     	this.host = apperyClient.host;
+    	this.protocol = apperyClient.protocol;
     }
 
     /**
@@ -32,8 +34,8 @@ public class ApperySecurity {
      */
     void doLogin(String username, String password, String targetPath) 
             throws ApperyUnitException {
-        String target = "https://" + host + targetPath; 
-        String loginUrl = "https://idp." + host + "/idp/doLogin";
+        String target = protocol + host + targetPath; 
+        String loginUrl = protocol + "idp." + host + "/idp/doLogin";
         
         Map<String, String> params = new HashMap<String, String>();
         params.put("cn", username);
@@ -85,6 +87,22 @@ public class ApperySecurity {
             return action.substring("ACTION=\"".length());
         } 
         return null;
+    }
+
+    /**
+     * Main method.
+     */
+    void standaloneLogin(String username, String password) 
+            throws ApperyUnitException {
+        String loginUrl = protocol + host + "/apiexpress/rest/auth/login";
+        
+        HttpPost samlRequest = new HttpPost(loginUrl);
+        samlRequest.addHeader(new BasicHeader("Content-Type", "application/x-www-form-urlencoded"));
+        ArrayList postParameters = new ArrayList<NameValuePair>();
+        postParameters.add(new BasicNameValuePair("j_username", username));
+        postParameters.add(new BasicNameValuePair("j_password", password));
+        samlRequest.setEntity(new UrlEncodedFormEntity(postParameters, "UTF-8"));
+        response = httpclient.execute(samlRequest, new HttpResponseHandler());
     }
 
 }
