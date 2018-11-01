@@ -69,7 +69,7 @@ public class ApperyClient extends ApperyRestClient {
     }
 
     /**
-     * Performs SAML login to access Appery.io backend funnctions.
+     * Performs SAML login to access Appery.io backend functions.
      */
     boolean doLogin(String username, String password) {
         return doLogin(username, password, "/bksrv/")
@@ -90,6 +90,23 @@ public class ApperyClient extends ApperyRestClient {
             console("[ERROR] " + e);
             return false;
         }
+    }
+
+    /**
+     * Performs login to access standalone API Express.
+     */
+    boolean standaloneLogin(String username, String password) {
+        try {
+			if (!echoMode) {
+                new ApperySecurity(this).standaloneLogin(username, password);
+		    } else {
+				console "ECHO MODE: Login success"
+			}
+            return true;
+        } catch(ApperyUnitException e) {
+            console("[ERROR] " + e);
+            return false;
+        }        
     }
 
     // -------------- Appery projects

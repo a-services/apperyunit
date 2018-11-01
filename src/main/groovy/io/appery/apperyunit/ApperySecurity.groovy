@@ -102,7 +102,7 @@ public class ApperySecurity {
         postParameters.add(new BasicNameValuePair("j_username", username));
         postParameters.add(new BasicNameValuePair("j_password", password));
         samlRequest.setEntity(new UrlEncodedFormEntity(postParameters, "UTF-8"));
-        response = httpclient.execute(samlRequest, new HttpResponseHandler());
+        def response = httpclient.execute(samlRequest, new HttpResponseHandler());
     }
 
 }

@@ -54,6 +54,14 @@ public class ApperyRestClient {
         return host;
     }
 
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
     /**
      * Performs HTTP GET.
      */
