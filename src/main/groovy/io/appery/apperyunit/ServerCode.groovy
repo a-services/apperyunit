@@ -31,7 +31,8 @@ class ServerCode {
         this.jsFile = jsFile
         jsEngine = new ScriptEngineManager().getEngineByName("JavaScript")
         int nh1 = jsSource.count('\n')
-        dependency(jsFile)
+        assert jsFile.endsWith('.js')
+        dependency(jsFile.substring(0, jsFile.length()-3))
 
         if (jsonParams.trim().length()==0) {
             jsonParams = '{}'
@@ -65,6 +66,8 @@ class ServerCode {
 
         // Template for JavaScript stub
         String jsHeader = """
+            // :folding=explicit:collapseFolds=1:
+            // {{{ Definitions for Appery server-code functions 
             var Apperyio_requestParams = $Apperyio_requestParams;
             var Apperyio_body = '$Apperyio_body';
 
@@ -225,8 +228,9 @@ class ServerCode {
                     return JSON.parse(res);
                 }
             };
-
-        """
+            // }}}
+        """.stripIndent().trim();
+        
         jsSource = jsHeader + jsSource
         int nh2 = jsHeader.count('\n')
         linesInHeader = (nh1 + nh2 + 2)
@@ -285,7 +289,9 @@ class ServerCode {
      * Add dependency library to output source.
      */
     void dependency(String jsFile) {
-        jsSource += '\n// ------ ' + jsFile + '\n' + new File(jsFile).text
+        jsSource += '\n// {{{ ------ ' + jsFile + '\n' + 
+                    new File(jsFile + '.js').text +
+                    '\n// }}}';
     }
 
     void addDependencies(String scriptName) {
@@ -294,7 +300,7 @@ class ServerCode {
         dt.collectDeps(scriptName)
         dt.result.each { jsFile ->
             if (jsFile.length()>0) {
-                jsSource += '\n// ------ ' + jsFile + '\n' + new File(jsFile + '.js').text
+                dependency(jsFile);
             }
         }
     }
