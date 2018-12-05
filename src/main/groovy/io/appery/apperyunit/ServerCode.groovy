@@ -325,7 +325,9 @@ class ServerCode {
             }
             for (String dep in scriptDeps) {
                 collectDeps(dep)
-                result.add(dep)
+                if (!result.contains(dep)) {
+                    result.add(dep)
+                }
             }
         }
 
