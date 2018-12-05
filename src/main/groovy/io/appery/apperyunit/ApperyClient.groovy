@@ -24,7 +24,7 @@ import javax.script.ScriptException
 public class ApperyClient extends ApperyRestClient {
 
     int metaCount = 0;
-    
+
     /**
      * ApperyClient will save REST response into `outFolder`
      * if this property is not null.
@@ -32,25 +32,28 @@ public class ApperyClient extends ApperyRestClient {
      */
     String outFolder;
     static String scriptName;
-    
-    boolean echoMode = false;    
-    
+
+    boolean echoMode = false;
+
     final String metaFileName = "meta-";
-    
+
     /**
-     * Create another instance of ApperyClient to use it from JavaScript. 
+     * Create another instance of ApperyClient to use it from JavaScript.
      */
     static ApperyClient newInstance() {
-        assert script_name!=null
-        
+        if (script_name==null) {
+            // We expect global variable `script_name` defined in `Utils` to exist.
+            throw new ApperyUnitException("Missing script name in ApperyClient");
+        }
+
         ApperyClient ac = new ApperyClient();
         ac.outFolder = fixturesFolder + '/' + script_name
         ensureFolder(ac.outFolder)
 
-        ac.echoMode = echo_mode 
-        return ac       
+        ac.echoMode = echo_mode
+        return ac
 	}
-	
+
     // -------------- Login
 
     /**
@@ -106,7 +109,7 @@ public class ApperyClient extends ApperyRestClient {
         } catch(ApperyUnitException e) {
             console("[ERROR] " + e);
             return false;
-        }        
+        }
     }
 
     // -------------- Appery projects
@@ -158,7 +161,7 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Load ids of project source files.
      * @param projectGuidType  Project GUID concatenated with project type.
-     *                         Example: projectGuid + '/IONIC/'                
+     *                         Example: projectGuid + '/IONIC/'
      */
     String loadSourceInfo(projectGuidType) {
         try {
@@ -167,14 +170,14 @@ public class ApperyClient extends ApperyRestClient {
             return null;
         }
     }
-    
+
     /**
      * Load source file by id.
      */
     String loadSource(srcId) {
         return makeGet('/app/rest/html5/ide/source/' + srcId + '/read/data');
     }
-    
+
     /**
      * Get list of certificates in Appery.io workspace.
      */
@@ -188,7 +191,7 @@ public class ApperyClient extends ApperyRestClient {
     String loadCertificateInfo(String uuid) {
         return traceGet('List of certificates', '/app/rest/certificates/' + uuid);
     }
-    
+
     // -------------- Server code scripts
 
     /**
@@ -252,7 +255,7 @@ public class ApperyClient extends ApperyRestClient {
     String loadAexServices(String folderId) {
         return traceGet('List of AEX services', '/apiexpress/rest/service/custom/' + folderId + '/children');
     }
-    
+
     // -------------- Utils
 
     String traceGet(String title, String url) {
@@ -275,10 +278,10 @@ public class ApperyClient extends ApperyRestClient {
         return traceMeta(title, url, null, null, body, 'put');
     }
 
-    String traceMeta(String title, String url, 
-                     Map<String, String> params, 
+    String traceMeta(String title, String url,
+                     Map<String, String> params,
                      Map<String, String> headers,
-                     String body, 
+                     String body,
                      String method) {
 		metaCount++;
 		String fname = metaFileName+metaCount+'.json'
@@ -315,7 +318,7 @@ public class ApperyClient extends ApperyRestClient {
         new File(fname).text = text
         console "`$fname` saved"
     }
-    
+
     void delay(int ms) {
         sleep(ms);
     }

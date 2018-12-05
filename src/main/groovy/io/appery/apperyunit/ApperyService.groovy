@@ -566,6 +566,7 @@ public class ApperyService {
             String params = curParamsText()
             echo_mode = false
             test_mode = false
+            script_name = scriptName
             try {
                 sc.run(scriptName+'.js', params)
 
@@ -613,6 +614,7 @@ public class ApperyService {
             String params = curParamsText()
             echo_mode = true
             test_mode = false
+            script_name = scriptName
             try {
                 sc.run(scriptName+'.js', params)
 
