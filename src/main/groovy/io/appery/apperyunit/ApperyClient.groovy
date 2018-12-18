@@ -311,12 +311,12 @@ public class ApperyClient extends ApperyRestClient {
 
     void saveJson(String jsonData, String fname) {
         new File(fname).text = JsonOutput.prettyPrint(jsonData); //JsonOutput.toJson(jsonData))
-        console "`$fname` saved"
+        console "$ital`$fname`$norm saved"
     }
 
     void saveFile(text, String fname) {
         new File(fname).text = text
-        console "`$fname` saved"
+        console "$ital`$fname`$norm saved"
     }
 
     void delay(int ms) {
