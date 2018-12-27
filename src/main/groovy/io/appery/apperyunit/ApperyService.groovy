@@ -272,7 +272,10 @@ public class ApperyService {
         script.dependencies.each { depGuid ->
             def dep = scripts.find { it.guid==depGuid }
             depNames.add(dep.name)
-            downloadScript(dep as ScriptJson)
+            if (!dep.isDownloaded) {
+                downloadScript(dep as ScriptJson)
+                dep.isDownloaded = true
+            }
         }
         if (depNames.size()>0) {
             jsonDeps.put(script.name, depNames)
@@ -390,11 +393,17 @@ public class ApperyService {
 
         if (curObj.isScript) {
             File paramsFile = new File(paramsFolder, scriptName+'.params')
-            dashboardFrame.paramsArea.setText(paramsFile.exists()? paramsFile.text : "")
-            dashboardFrame.paramsArea.setEditable(true)
+            String text = paramsFile.exists()? paramsFile.text : ""
+            String[] params = ServerCode.extractBody(text)
+            dashboardFrame.paramsQueryArea.setText(params[0])
+            dashboardFrame.paramsQueryArea.setEditable(true)
+            dashboardFrame.paramsBodyArea.setText(params[1])
+            dashboardFrame.paramsBodyArea.setEditable(true)
         } else {
-            dashboardFrame.paramsArea.setText("")
-            dashboardFrame.paramsArea.setEditable(false)
+            dashboardFrame.paramsQueryArea.setText("")
+            dashboardFrame.paramsQueryArea.setEditable(false)
+            dashboardFrame.paramsBodyArea.setText("")
+            dashboardFrame.paramsBodyArea.setEditable(false)
         }
 
         dashboardFrame.scriptNameLabel.setText("<html>${curScriptNameText()}</html>");
@@ -404,10 +413,9 @@ public class ApperyService {
 
 
         dashboardFrame.downloadButton.setEnabled(true)
-        dashboardFrame.saveButton.setEnabled(false)
+        dashboardFrame.saveParamsButton.setEnabled(false)
         boolean scriptExists = new File(scriptName+'.js').exists()
         dashboardFrame.runButton.setEnabled(scriptExists)
-        dashboardFrame.logsButton.setEnabled(scriptExists)
 
         File successFile = new File(fixturesFolder + '/' + scriptName + '/' + scriptName+'.success.json')
         dashboardFrame.echoButton.setEnabled(successFile.exists())
@@ -467,8 +475,8 @@ public class ApperyService {
                 console "--- Downloading all scripts ---"
                 for (int i=0; i<scripts.size(); i++) {
                     downloadScript(scripts[i] as ScriptJson)
-                    //console "Script saved: ${bold}${scripts[i].name}.js${norm}"
                 }
+                console "=== ${scripts.size()} scripts downloaded ---"
             } else {
                 // is folder
                 List subscripts = findAllScripts(curObj.data._id)
@@ -476,7 +484,7 @@ public class ApperyService {
                 for (def script in subscripts) {
                     downloadScript(script as ScriptJson)
                 }
-                //console "--- Done ---"
+                console "=== ${subscripts.size()} scripts downloaded ---"
             }
 
             saveJsonDependencies()
@@ -509,6 +517,7 @@ public class ApperyService {
         batch_runner = null
     }
 
+    /*
     void processLogs() {
         dashboardFrame.logsButton.setEnabled(false)
         try {
@@ -535,7 +544,8 @@ public class ApperyService {
             dashboardFrame.logsButton.setEnabled(true)
         }
     }
-
+    */
+   
     /**
      * Starts `ServerCode` script in parallel thread.
      */
@@ -706,22 +716,25 @@ public class ApperyService {
      * Saves `.params` file for `curObj`.
      */
     void buttonSave() {
-        String[] params = ServerCode.extractBody(dashboardFrame.paramsArea.text)
-        params[0] = prettyPrintParams(params[0])
-        if (params[1] != null) {
-            params[1] = prettyPrintParams(params[1])
-            params[0] += '\n----\n' + params[1]
+        String paramsQuery = dashboardFrame.paramsQueryArea.text.trim()
+        paramsQuery = prettyPrintParams(paramsQuery)
+        String text = paramsQuery
+        String paramsBody = dashboardFrame.paramsBodyArea.text.trim()
+        if (paramsBody.length()>0) {
+            paramsBody = prettyPrintParams(paramsBody)
+            text += '\n----\n' + paramsBody
         }
         String scriptName = curObj.name
-        new File(paramsFolder, scriptName + ".params").text = params[0]
-        dashboardFrame.paramsArea.text = params[0]
+        new File(paramsFolder, scriptName + ".params").text = text
+        dashboardFrame.paramsQueryArea.text = paramsQuery
+        dashboardFrame.paramsBodyArea.text = paramsBody
         console "File saved: ${scriptName}.params"
 
-        dashboardFrame.saveButton.setEnabled(false);
+        dashboardFrame.saveParamsButton.setEnabled(false);
         dashboardFrame.runButton.setEnabled(true);
         dashboardFrame.echoButton.setEnabled(true);
         dashboardFrame.testButton.setEnabled(true);
-        dashboardFrame.logsButton.setEnabled(true);
+        //dashboardFrame.logsButton.setEnabled(true);
     }
 
     /**
@@ -770,13 +783,22 @@ public class ApperyService {
      * params info from `curObj`.
      */
     void buildParamList() {
+        /*
         ListModel<String> listModel = new DefaultListModel<String>();
         dashboardFrame.paramList.setModel(listModel);
         if (curObj!=null && curObj.isScript) {
             listModel.addElement(curObj.name + '.params');
             dashboardFrame.paramList.setSelectedIndex(0);
             dashboardFrame.paramList.ensureIndexIsVisible(0);
+        }*/
+        ComboBoxModel<String> comboModel = new DefaultComboBoxModel<String>();
+        dashboardFrame.paramListComboBox.setModel(comboModel);
+        if (curObj!=null && curObj.isScript) {
+            comboModel.addElement(curObj.name + '.params');
+            dashboardFrame.paramListComboBox.setSelectedIndex(0);
         }
+        //paramListComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        
     }
 
 

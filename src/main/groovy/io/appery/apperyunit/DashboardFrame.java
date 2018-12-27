@@ -68,20 +68,22 @@ public class DashboardFrame extends javax.swing.JFrame {
         scriptsTree = new javax.swing.JTree();
         controlPanel = new javax.swing.JPanel();
         paramsPanel = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        paramsArea = new javax.swing.JTextArea();
+        saveParamsButton = new javax.swing.JButton();
+        paramListComboBox = new javax.swing.JComboBox<>();
+        newParamsButton = new javax.swing.JButton();
+        resetParamsButton = new javax.swing.JButton();
+        paramsSplitPane = new javax.swing.JSplitPane();
+        paramsQueryScrollPane = new javax.swing.JScrollPane();
+        paramsQueryArea = new javax.swing.JTextArea();
+        paramsBodyScrollPane = new javax.swing.JScrollPane();
+        paramsBodyArea = new javax.swing.JTextArea();
         scriptNamePanel = new javax.swing.JPanel();
         scriptNameLabel = new javax.swing.JLabel();
-        paramListPanel = new javax.swing.JPanel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        paramList = new javax.swing.JList<>();
         buttonPanel = new javax.swing.JPanel();
         runButton = new javax.swing.JButton();
         echoButton = new javax.swing.JButton();
         testButton = new javax.swing.JButton();
         downloadButton = new javax.swing.JButton();
-        saveButton = new javax.swing.JButton();
-        logsButton = new javax.swing.JButton();
         closeButton = new javax.swing.JButton();
         dependenciesPanel = new javax.swing.JPanel();
         depsScroll = new javax.swing.JScrollPane();
@@ -119,30 +121,80 @@ public class DashboardFrame extends javax.swing.JFrame {
 
         paramsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, ".params", javax.swing.border.TitledBorder.RIGHT, javax.swing.border.TitledBorder.BELOW_TOP));
 
-        paramsArea.setEditable(false);
-        paramsArea.setColumns(20);
-        paramsArea.setFont(new java.awt.Font("Monospaced", 0, 13)); // NOI18N
-        paramsArea.setRows(5);
-        paramsArea.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                paramAreaChanged(evt);
+        saveParamsButton.setText("Save");
+        saveParamsButton.setActionCommand("");
+        saveParamsButton.setEnabled(false);
+        saveParamsButton.setPreferredSize(new java.awt.Dimension(100, 29));
+        saveParamsButton.setSize(new java.awt.Dimension(100, 29));
+        saveParamsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveParamsButtonActionPerformed(evt);
             }
         });
-        jScrollPane3.setViewportView(paramsArea);
+
+        paramListComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        paramListComboBox.setEnabled(false);
+
+        newParamsButton.setText("New");
+        newParamsButton.setEnabled(false);
+
+        resetParamsButton.setText("Reset");
+        resetParamsButton.setEnabled(false);
+
+        paramsSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        paramsSplitPane.setResizeWeight(0.5);
+
+        paramsQueryArea.setEditable(false);
+        paramsQueryArea.setColumns(20);
+        paramsQueryArea.setFont(new java.awt.Font("Monospaced", 0, 13)); // NOI18N
+        paramsQueryArea.setRows(5);
+        paramsQueryArea.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                paramsQueryAreaChanged(evt);
+            }
+        });
+        paramsQueryScrollPane.setViewportView(paramsQueryArea);
+
+        paramsSplitPane.setLeftComponent(paramsQueryScrollPane);
+
+        paramsBodyArea.setColumns(20);
+        paramsBodyArea.setRows(5);
+        paramsBodyArea.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                paramsBodyAreaChanged(evt);
+            }
+        });
+        paramsBodyScrollPane.setViewportView(paramsBodyArea);
+
+        paramsSplitPane.setRightComponent(paramsBodyScrollPane);
 
         javax.swing.GroupLayout paramsPanelLayout = new javax.swing.GroupLayout(paramsPanel);
         paramsPanel.setLayout(paramsPanelLayout);
         paramsPanelLayout.setHorizontalGroup(
             paramsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, paramsPanelLayout.createSequentialGroup()
+            .addGroup(paramsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3)
+                .addComponent(paramListComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(newParamsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(saveParamsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(resetParamsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
+            .addComponent(paramsSplitPane)
         );
         paramsPanelLayout.setVerticalGroup(
             paramsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(paramsPanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(paramsSplitPane, javax.swing.GroupLayout.PREFERRED_SIZE, 326, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(paramsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(saveParamsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(paramListComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(newParamsButton)
+                    .addComponent(resetParamsButton))
                 .addContainerGap())
         );
 
@@ -165,28 +217,6 @@ public class DashboardFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(scriptNameLabel)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        paramListPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(null, ".paramlist", javax.swing.border.TitledBorder.RIGHT, javax.swing.border.TitledBorder.BELOW_TOP));
-
-        paramList.setFont(new java.awt.Font("Monospaced", 0, 13)); // NOI18N
-        paramList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jScrollPane4.setViewportView(paramList);
-
-        javax.swing.GroupLayout paramListPanelLayout = new javax.swing.GroupLayout(paramListPanel);
-        paramListPanel.setLayout(paramListPanelLayout);
-        paramListPanelLayout.setHorizontalGroup(
-            paramListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(paramListPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        paramListPanelLayout.setVerticalGroup(
-            paramListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(paramListPanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
-                .addContainerGap())
         );
 
         buttonPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -232,27 +262,6 @@ public class DashboardFrame extends javax.swing.JFrame {
             }
         });
 
-        saveButton.setText("Save");
-        saveButton.setActionCommand("");
-        saveButton.setEnabled(false);
-        saveButton.setPreferredSize(new java.awt.Dimension(100, 29));
-        saveButton.setSize(new java.awt.Dimension(100, 29));
-        saveButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveButtonActionPerformed(evt);
-            }
-        });
-
-        logsButton.setText("Logs");
-        logsButton.setEnabled(false);
-        logsButton.setPreferredSize(new java.awt.Dimension(100, 29));
-        logsButton.setSize(new java.awt.Dimension(100, 29));
-        logsButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                logsButtonActionPerformed(evt);
-            }
-        });
-
         closeButton.setText("Close");
         closeButton.setActionCommand("");
         closeButton.setPreferredSize(new java.awt.Dimension(100, 29));
@@ -277,10 +286,6 @@ public class DashboardFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(downloadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(logsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(closeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -293,8 +298,6 @@ public class DashboardFrame extends javax.swing.JFrame {
                     .addComponent(echoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(testButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(downloadButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(logsButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(closeButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -324,7 +327,7 @@ public class DashboardFrame extends javax.swing.JFrame {
             .addGroup(dependenciesPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(dependenciesPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(depsScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(depsScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
                     .addComponent(depsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -334,7 +337,7 @@ public class DashboardFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(depsLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(depsScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addComponent(depsScroll)
                 .addContainerGap())
         );
 
@@ -343,16 +346,13 @@ public class DashboardFrame extends javax.swing.JFrame {
         controlPanelLayout.setHorizontalGroup(
             controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(controlPanelLayout.createSequentialGroup()
-                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(paramListPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(dependenciesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(dependenciesPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(paramsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, controlPanelLayout.createSequentialGroup()
-                .addComponent(buttonPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(130, 130, 130))
-            .addGroup(controlPanelLayout.createSequentialGroup()
-                .addComponent(scriptNamePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(buttonPanel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(scriptNamePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         controlPanelLayout.setVerticalGroup(
@@ -365,8 +365,6 @@ public class DashboardFrame extends javax.swing.JFrame {
                 .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(paramsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(controlPanelLayout.createSequentialGroup()
-                        .addComponent(paramListPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(dependenciesPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())))
         );
@@ -391,7 +389,7 @@ public class DashboardFrame extends javax.swing.JFrame {
         consolePanelLayout.setVerticalGroup(
             consolePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(consolePanelLayout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 336, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -428,13 +426,9 @@ public class DashboardFrame extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_closeButtonActionPerformed
 
-    private void logsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logsButtonActionPerformed
-        appery.buttonLogs();
-    }//GEN-LAST:event_logsButtonActionPerformed
-
-    private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
+    private void saveParamsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveParamsButtonActionPerformed
         appery.buttonSave();
-    }//GEN-LAST:event_saveButtonActionPerformed
+    }//GEN-LAST:event_saveParamsButtonActionPerformed
 
     private void downloadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButtonActionPerformed
         appery.buttonDownload();
@@ -452,12 +446,21 @@ public class DashboardFrame extends javax.swing.JFrame {
         appery.buttonRun();
     }//GEN-LAST:event_runButtonActionPerformed
 
-    private void paramAreaChanged(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_paramAreaChanged
-        saveButton.setEnabled(true);
+    private void paramsQueryAreaChanged(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_paramsQueryAreaChanged
+        saveParamsButton.setEnabled(true);
+        resetParamsButton.setEnabled(true);
         runButton.setEnabled(false);
         echoButton.setEnabled(false);
         testButton.setEnabled(false);
-    }//GEN-LAST:event_paramAreaChanged
+    }//GEN-LAST:event_paramsQueryAreaChanged
+
+    private void paramsBodyAreaChanged(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_paramsBodyAreaChanged
+        saveParamsButton.setEnabled(true);
+        resetParamsButton.setEnabled(true);
+        runButton.setEnabled(false);
+        echoButton.setEnabled(false);
+        testButton.setEnabled(false);
+    }//GEN-LAST:event_paramsBodyAreaChanged
 
     /**
      * @param args the command line arguments
@@ -508,15 +511,17 @@ public class DashboardFrame extends javax.swing.JFrame {
     private javax.swing.JButton echoButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JButton logsButton;
-    private javax.swing.JList<String> paramList;
-    private javax.swing.JPanel paramListPanel;
-    private javax.swing.JTextArea paramsArea;
+    private javax.swing.JButton newParamsButton;
+    private javax.swing.JComboBox<String> paramListComboBox;
+    private javax.swing.JTextArea paramsBodyArea;
+    private javax.swing.JScrollPane paramsBodyScrollPane;
     private javax.swing.JPanel paramsPanel;
+    private javax.swing.JTextArea paramsQueryArea;
+    private javax.swing.JScrollPane paramsQueryScrollPane;
+    private javax.swing.JSplitPane paramsSplitPane;
+    private javax.swing.JButton resetParamsButton;
     private javax.swing.JButton runButton;
-    private javax.swing.JButton saveButton;
+    private javax.swing.JButton saveParamsButton;
     private javax.swing.JLabel scriptNameLabel;
     private javax.swing.JPanel scriptNamePanel;
     private javax.swing.JTree scriptsTree;
