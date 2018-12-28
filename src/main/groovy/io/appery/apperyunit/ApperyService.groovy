@@ -701,42 +701,69 @@ public class ApperyService {
     /**
      * Apply prettyprinting to contents of *Params* textarea.
      */
-    String prettyPrintParams(String text) {
-        try {
-            text = JsonOutput.prettyPrint(JsonOutput.toJson(apperyClient.jsonSlurper.parseText(text)))
-        } catch (JsonException e) {
-            console '[ERROR] Cannot parse JSON parameters. Error message:'
-            console "`"*80
-            console e.getMessage()
-        }
-        return text
+    String prettyPrintParams(String text) throws JsonException {
+        return JsonOutput.prettyPrint(JsonOutput.toJson(apperyClient.jsonSlurper.parseText(text)))
     }
 
     /**
      * Saves `.params` file for `curObj`.
      */
-    void buttonSave() {
+    void buttonSaveParams() {
         String paramsQuery = dashboardFrame.paramsQueryArea.text.trim()
-        paramsQuery = prettyPrintParams(paramsQuery)
-        String text = paramsQuery
         String paramsBody = dashboardFrame.paramsBodyArea.text.trim()
-        if (paramsBody.length()>0) {
-            paramsBody = prettyPrintParams(paramsBody)
-            text += '\n----\n' + paramsBody
-        }
         String scriptName = curObj.name
-        new File(paramsFolder, scriptName + ".params").text = text
-        dashboardFrame.paramsQueryArea.text = paramsQuery
-        dashboardFrame.paramsBodyArea.text = paramsBody
-        console "File saved: ${scriptName}.params"
+        try {
+            if (paramsQuery.length()==0 && paramsBody.length()==0) {
+                new File(paramsFolder, scriptName + ".params").delete()
+            } else {
+                String text = prettyPrintParams("{}")
+                if (paramsQuery.length()>0) {
+                    paramsQuery = prettyPrintParams(paramsQuery)
+                    text = paramsQuery
+                } else {
+                    paramsQuery = text
+                }
+                if (paramsBody.length()>0) {
+                    paramsBody = prettyPrintParams(paramsBody)
+                    text += '\n----\n' + paramsBody
+                }
+                new File(paramsFolder, scriptName + ".params").text = text
+            }
+            dashboardFrame.paramsQueryArea.text = paramsQuery
+            dashboardFrame.paramsBodyArea.text = paramsBody
+            console "File saved: ${scriptName}.params"
+
+            dashboardFrame.saveParamsButton.setEnabled(false);
+            dashboardFrame.resetParamsButton.setEnabled(false);
+            dashboardFrame.runButton.setEnabled(true);
+            dashboardFrame.echoButton.setEnabled(true);
+            dashboardFrame.testButton.setEnabled(true);
+            //dashboardFrame.logsButton.setEnabled(true);
+        } catch(JsonException e) {
+            console '[ERROR] Cannot parse JSON parameters. Error message:'
+            console "`"*80
+            console e.getMessage()
+        }
+    }
+
+    void buttonResetParams() {
+        String scriptName = curObj.name
+        File paramsFile = new File(paramsFolder, scriptName+'.params')
+        String text = paramsFile.exists()? paramsFile.text : ""
+        String[] params = ServerCode.extractBody(text)
+        dashboardFrame.paramsQueryArea.setText(params[0])
+        dashboardFrame.paramsQueryArea.setEditable(true)
+        dashboardFrame.paramsBodyArea.setText(params[1])
+        dashboardFrame.paramsBodyArea.setEditable(true)
+        console "File reset: ${scriptName}.params"
 
         dashboardFrame.saveParamsButton.setEnabled(false);
+        dashboardFrame.resetParamsButton.setEnabled(false);
         dashboardFrame.runButton.setEnabled(true);
         dashboardFrame.echoButton.setEnabled(true);
         dashboardFrame.testButton.setEnabled(true);
-        //dashboardFrame.logsButton.setEnabled(true);
     }
-
+    
     /**
      * Checks ApperyDB if we are running the latest program version
      * and updates `scriptNameLabel` in `DashboardFrame` appropriately.

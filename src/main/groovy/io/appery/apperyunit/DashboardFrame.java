@@ -140,6 +140,11 @@ public class DashboardFrame extends javax.swing.JFrame {
 
         resetParamsButton.setText("Reset");
         resetParamsButton.setEnabled(false);
+        resetParamsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetParamsButtonActionPerformed(evt);
+            }
+        });
 
         paramsSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         paramsSplitPane.setResizeWeight(0.5);
@@ -285,9 +290,9 @@ public class DashboardFrame extends javax.swing.JFrame {
                 .addComponent(testButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(downloadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(closeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         buttonPanelLayout.setVerticalGroup(
             buttonPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -427,7 +432,7 @@ public class DashboardFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_closeButtonActionPerformed
 
     private void saveParamsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveParamsButtonActionPerformed
-        appery.buttonSave();
+        appery.buttonSaveParams();
     }//GEN-LAST:event_saveParamsButtonActionPerformed
 
     private void downloadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButtonActionPerformed
@@ -461,6 +466,10 @@ public class DashboardFrame extends javax.swing.JFrame {
         echoButton.setEnabled(false);
         testButton.setEnabled(false);
     }//GEN-LAST:event_paramsBodyAreaChanged
+
+    private void resetParamsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetParamsButtonActionPerformed
+        appery.buttonResetParams();
+    }//GEN-LAST:event_resetParamsButtonActionPerformed
 
     /**
      * @param args the command line arguments
