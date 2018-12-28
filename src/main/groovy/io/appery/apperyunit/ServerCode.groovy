@@ -46,7 +46,10 @@ class ServerCode {
             println '....'
         }
         */
-        String Apperyio_requestParams = params[0].trim()
+        String Apperyio_requestParams = '{}'
+        if (params[0].trim().length()>0) {
+            Apperyio_requestParams = params[0].trim()
+        } 
         console " $bold Params:$norm $Apperyio_requestParams"
 
         /*

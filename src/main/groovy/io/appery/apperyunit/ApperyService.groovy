@@ -98,9 +98,23 @@ public class ApperyService {
             console "Script saved: ${bold}${scriptName}.js${norm}"
             //saveDependencies(script)
             updateJsonDependencies(script)
+            saveScriptParams(script, details)
         }
     }
 
+    void saveScriptParams(ScriptJson script, def details) {
+        String scriptName = script.name
+        File f = new File(paramsFolder, scriptName + ".params")
+        if (f.exists() || !script.executable || details.testParams==null) {
+            return
+        }
+        ScriptParams params = new ScriptParams()
+        String s = JsonOutput.toJson(details.testParams.urlParameters)
+        params.query = s.equals("{}")? "": JsonOutput.prettyPrint(s)
+        params.body = details.testParams.body
+        saveScriptParamsFile(scriptName, params)
+    }
+    
     /**
      * Load script logs from Appery and send them to console.
      */
@@ -702,35 +716,22 @@ public class ApperyService {
      * Apply prettyprinting to contents of *Params* textarea.
      */
     String prettyPrintParams(String text) throws JsonException {
-        return JsonOutput.prettyPrint(JsonOutput.toJson(apperyClient.jsonSlurper.parseText(text)))
+        String s = JsonOutput.toJson(apperyClient.jsonSlurper.parseText(text))
+        return s.equals("{}")? "": JsonOutput.prettyPrint(s)
     }
 
     /**
      * Saves `.params` file for `curObj`.
      */
     void buttonSaveParams() {
-        String paramsQuery = dashboardFrame.paramsQueryArea.text.trim()
-        String paramsBody = dashboardFrame.paramsBodyArea.text.trim()
         String scriptName = curObj.name
+        ScriptParams params = new ScriptParams()
+        params.query = dashboardFrame.paramsQueryArea.text.trim()
+        params.body = dashboardFrame.paramsBodyArea.text.trim()
         try {
-            if (paramsQuery.length()==0 && paramsBody.length()==0) {
-                new File(paramsFolder, scriptName + ".params").delete()
-            } else {
-                String text = prettyPrintParams("{}")
-                if (paramsQuery.length()>0) {
-                    paramsQuery = prettyPrintParams(paramsQuery)
-                    text = paramsQuery
-                } else {
-                    paramsQuery = text
-                }
-                if (paramsBody.length()>0) {
-                    paramsBody = prettyPrintParams(paramsBody)
-                    text += '\n----\n' + paramsBody
-                }
-                new File(paramsFolder, scriptName + ".params").text = text
-            }
-            dashboardFrame.paramsQueryArea.text = paramsQuery
-            dashboardFrame.paramsBodyArea.text = paramsBody
+            params = saveScriptParamsFile(scriptName, params)
+            dashboardFrame.paramsQueryArea.text = params.query
+            dashboardFrame.paramsBodyArea.text = params.body
             console "File saved: ${scriptName}.params"
 
             dashboardFrame.saveParamsButton.setEnabled(false);
@@ -746,6 +747,37 @@ public class ApperyService {
         }
     }
 
+    /**
+     * Save `.params` file and return formatted values.
+     */
+    ScriptParams saveScriptParamsFile(String scriptName, ScriptParams params) {
+        if (params.query.length()==0 && params.body.length()==0) {
+            new File(paramsFolder, scriptName + ".params").delete()
+        } else {
+            String text = prettyPrintParams("{}")
+            if (params.query.length()>0) {
+                params.query = prettyPrintParams(params.query)
+                text = params.query
+            } else {
+                params.query = text
+            }
+            if (params.body.length()>0) {
+                try {
+                    params.body = prettyPrintParams(params.body)
+                } catch(JsonException e1) {
+                }
+                text += '\n----\n' + params.body
+            }
+            new File(paramsFolder, scriptName + ".params").text = text
+        }
+        return params
+    }
+    
+    class ScriptParams {
+        String query;
+        String body;
+    }
+    
     void buttonResetParams() {
         String scriptName = curObj.name
         File paramsFile = new File(paramsFolder, scriptName+'.params')
