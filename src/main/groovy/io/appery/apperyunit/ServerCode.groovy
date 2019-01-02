@@ -303,7 +303,7 @@ class ServerCode {
         dt.collectDeps(scriptName)
         dt.result.each { jsFile ->
             if (jsFile.length()>0) {
-                dependency(jsFile);
+                dependency(librariesFolder + '/' + jsFile);
             }
         }
     }
@@ -318,7 +318,7 @@ class ServerCode {
         List<String> result = new LinkedList()
 
         void loadJsonDependencies() {
-            File f = new File('dependencies.json')
+            File f = new File(librariesFolder, dependenciesJsonFile)
             if (f.exists()) {
                 jsonDeps = new JsonSlurper().parseText(f.text)
             }

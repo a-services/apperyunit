@@ -87,7 +87,8 @@ public class ApperyService {
             script.isDownloaded = true
             String scriptName = script.name
             def details = apperyClient.jsonSlurper.parseText(apperyClient.downloadScript(script.guid));
-            File f =  new File(scriptName + '.js')
+            String fname = scriptName + '.js'
+            File f = script.executable? new File(fname): new File(librariesFolder, fname)
             /*
             if (!overwrite && f.exists()) {
                 console "${red}[WARN]${norm} Already exists: ${red}${scriptName}.js${norm}"
@@ -300,14 +301,14 @@ public class ApperyService {
     }
 
     /**
-     * Rewrite `dependencies.json` file.
+     * Rewrite dependencies desctiptor file.
      */
     void saveJsonDependencies() {
-        new File('dependencies.json').text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonDeps))
+        new File(librariesFolder, dependenciesJsonFile).text = JsonOutput.prettyPrint(JsonOutput.toJson(jsonDeps))
     }
 
     void loadJsonDependencies() {
-        File f = new File('dependencies.json')
+        File f = new File(librariesFolder, dependenciesJsonFile)
         if (f.exists()) {
             jsonDeps = apperyClient.jsonSlurper.parseText(f.text)
         }
@@ -478,7 +479,6 @@ public class ApperyService {
     void processDownload() {
         dashboardFrame.downloadButton.setEnabled(false)
         try {
-            ensureFolder(paramsFolder)
             markAsNotDownloaded(scripts)
 
             if (curObj.isScript) {
@@ -516,10 +516,6 @@ public class ApperyService {
         } else {
             e.printStackTrace();
         }
-    }
-
-    void ensureFixturesFolder() {
-        ensureFolder(fixturesFolder)
     }
 
     void buttonLogs() {

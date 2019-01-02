@@ -6,6 +6,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.text.DefaultCaret;
 import javax.swing.tree.TreeSelectionModel;
 
+import static io.appery.apperyunit.Utils.*;
+        
 /**
  * Main application frame.
  */
@@ -28,10 +30,12 @@ public class DashboardFrame extends javax.swing.JFrame {
     }
 
     void createDashboard() {
+        ensureApperyUnitFolders();
+        
         appery.loadScriptList();
         appery.loadFolders();
         appery.loadJsonDependencies();
-        appery.ensureFixturesFolder();
+
         //depsPanel.setLayout(new GridLayout(0, 1));
         depsScroll.setPreferredSize(new Dimension(200,200));
         depsPanel.setLayout(new BoxLayout(depsPanel, BoxLayout.Y_AXIS));

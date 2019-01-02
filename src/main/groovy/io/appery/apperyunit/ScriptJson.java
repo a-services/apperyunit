@@ -11,4 +11,5 @@ public class ScriptJson extends ScriptNodeJson {
     String name;
     String guid;
     List dependencies;
+    boolean executable; // `false` for library
 }

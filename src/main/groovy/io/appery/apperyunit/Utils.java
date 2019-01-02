@@ -32,6 +32,17 @@ class Utils {
      */
     static String fixturesFolder = "fixtures";
     
+    /**
+     * Folder name related to current folder where we'll store
+     * server-code libraries.
+     */
+    static String librariesFolder = "libraries";
+
+    /**
+     * File name of dependencies descriptor.
+     */
+    static String dependenciesJsonFile = "dependencies.json";
+
     //static boolean download_mode;
     
     static String script_name;
@@ -76,6 +87,15 @@ class Utils {
             return;
         } 
         f.mkdir();
+    }
+
+    /**
+     * Ensures ApperyUnit special folders to exist.
+     */
+    static void ensureApperyUnitFolders() {
+        ensureFolder(fixturesFolder);
+        ensureFolder(paramsFolder);
+        ensureFolder(librariesFolder);
     }
     
     /**

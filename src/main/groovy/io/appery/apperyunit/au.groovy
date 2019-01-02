@@ -30,8 +30,7 @@ if (args.size()==0) {
     return
 }
 
-ensureFolder(fixturesFolder)
-ensureFolder(paramsFolder)
+ensureApperyUnitFolders()
 
 cl = new CommandLine(args)
 colorMode = cl.extractColorMode()
