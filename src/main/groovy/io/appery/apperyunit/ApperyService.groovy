@@ -428,6 +428,7 @@ public class ApperyService {
 
 
         dashboardFrame.downloadButton.setEnabled(true)
+        dashboardFrame.swaggerButton.setEnabled(true)
         dashboardFrame.saveParamsButton.setEnabled(false)
         boolean scriptExists = new File(scriptName+'.js').exists()
         dashboardFrame.runButton.setEnabled(scriptExists)
@@ -518,43 +519,57 @@ public class ApperyService {
         }
     }
 
-    void buttonLogs() {
+    String swaggerOutputFile = "fixtures/swagger.json";
+    SwaggerBuilder swagger;
+    
+    void buttonSwagger() {
+        String result = JOptionPane.showInputDialog(dashboardFrame,
+             "Swagger definition file to generate:", "Swagger",
+             JOptionPane.QUESTION_MESSAGE, null, null, swaggerOutputFile);
+        if (result==null) {
+            return
+        } 
+        if (!result.endsWith('.json')) {
+            console "[ERROR] Swagger definition file is expected to have `.json` extension"
+            return
+        } 
+        swaggerOutputFile = result;
+        swagger = new SwaggerBuilder(this)
+        
         BatchRunner batchRunner = new BatchRunner()
         batchRunner.apperyService = this
-        batchRunner.mode = BatchRunnerMode.logsMode
+        batchRunner.mode = BatchRunnerMode.swaggerMode
         batch_runner = batchRunner
         batchRunner.execute()
         batch_runner = null
     }
 
-    /*
-    void processLogs() {
-        dashboardFrame.logsButton.setEnabled(false)
+    void processSwagger() {
+        dashboardFrame.swaggerButton.setEnabled(false)
         try {
             if (curObj.isScript) {
-                loadLogs(curObj.data as ScriptJson)
+                swagger.load(curObj.data as ScriptJson)
             } else
             if (curObj.isRoot) {
                 for (int i=0; i<scripts.size(); i++) {
-                    loadLogs(scripts[i] as ScriptJson)
+                    swagger.load(scripts[i] as ScriptJson)
                 }
             } else {
                 // is folder
                 List subscripts = findAllScripts(curObj.data._id)
-                console "--- Downloading ${subscripts.size()} logs from `${curObj.name}` folder ---"
+                console "--- Downloading ${subscripts.size()} Swagger definitions from `${curObj.name}` folder ---"
                 for (def script in subscripts) {
-                    loadLogs(script as ScriptJson)
+                    swagger.load(script as ScriptJson)
                 }
-                //console "--- Done ---"
             }
+            swagger.saveResult();
 
         } catch (Exception e) {
             handleException(e, null);
         } finally {
-            dashboardFrame.logsButton.setEnabled(true)
+            dashboardFrame.swaggerButton.setEnabled(true)
         }
     }
-    */
    
     /**
      * Starts `ServerCode` script in parallel thread.

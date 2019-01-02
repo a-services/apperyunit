@@ -89,6 +89,7 @@ public class DashboardFrame extends javax.swing.JFrame {
         testButton = new javax.swing.JButton();
         downloadButton = new javax.swing.JButton();
         closeButton = new javax.swing.JButton();
+        swaggerButton = new javax.swing.JButton();
         dependenciesPanel = new javax.swing.JPanel();
         depsScroll = new javax.swing.JScrollPane();
         depsPanel = new javax.swing.JPanel();
@@ -281,6 +282,18 @@ public class DashboardFrame extends javax.swing.JFrame {
             }
         });
 
+        swaggerButton.setText("Swagger");
+        swaggerButton.setEnabled(false);
+        swaggerButton.setMaximumSize(new java.awt.Dimension(107, 29));
+        swaggerButton.setMinimumSize(new java.awt.Dimension(107, 29));
+        swaggerButton.setPreferredSize(new java.awt.Dimension(100, 29));
+        swaggerButton.setSize(new java.awt.Dimension(100, 29));
+        swaggerButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                swaggerButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout buttonPanelLayout = new javax.swing.GroupLayout(buttonPanel);
         buttonPanel.setLayout(buttonPanelLayout);
         buttonPanelLayout.setHorizontalGroup(
@@ -294,6 +307,8 @@ public class DashboardFrame extends javax.swing.JFrame {
                 .addComponent(testButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(downloadButton, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(swaggerButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(closeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -307,7 +322,8 @@ public class DashboardFrame extends javax.swing.JFrame {
                     .addComponent(echoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(testButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(downloadButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(closeButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(closeButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(swaggerButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -475,6 +491,10 @@ public class DashboardFrame extends javax.swing.JFrame {
         appery.buttonResetParams();
     }//GEN-LAST:event_resetParamsButtonActionPerformed
 
+    private void swaggerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_swaggerButtonActionPerformed
+        appery.buttonSwagger();
+    }//GEN-LAST:event_swaggerButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -538,6 +558,7 @@ public class DashboardFrame extends javax.swing.JFrame {
     private javax.swing.JLabel scriptNameLabel;
     private javax.swing.JPanel scriptNamePanel;
     private javax.swing.JTree scriptsTree;
+    private javax.swing.JButton swaggerButton;
     private javax.swing.JButton testButton;
     private javax.swing.JPanel treePanel;
     // End of variables declaration//GEN-END:variables

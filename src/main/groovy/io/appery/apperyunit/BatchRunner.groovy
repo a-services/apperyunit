@@ -25,8 +25,8 @@ class BatchRunner extends SwingWorker<Void, String> {
             case BatchRunnerMode.testMode:
                 apperyService.processTest();
                 break;
-            case BatchRunnerMode.logsMode:
-                apperyService.processLogs();
+            case BatchRunnerMode.swaggerMode:
+                apperyService.processSwagger();
                 break;
         }
         return null;
