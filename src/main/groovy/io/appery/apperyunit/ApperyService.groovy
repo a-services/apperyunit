@@ -534,7 +534,7 @@ public class ApperyService {
             return
         } 
         swaggerOutputFile = result;
-        swagger = new SwaggerBuilder(this)
+        swagger = new SwaggerBuilder(swaggerOutputFile, apperyClient, folders)
         
         BatchRunner batchRunner = new BatchRunner()
         batchRunner.apperyService = this
@@ -552,7 +552,9 @@ public class ApperyService {
             } else
             if (curObj.isRoot) {
                 for (int i=0; i<scripts.size(); i++) {
-                    swagger.load(scripts[i] as ScriptJson)
+                    if (scripts[i].executable) {
+                        swagger.load(scripts[i] as ScriptJson)
+                    }
                 }
             } else {
                 // is folder
