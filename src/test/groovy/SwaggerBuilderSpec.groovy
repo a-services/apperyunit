@@ -23,7 +23,7 @@ class SwaggerBuilderSpec extends Specification {
         String outFile = '../swagger_ui/node_modules/swagger-ui-dist/swagger.json'
         SwaggerBuilder b = new SwaggerBuilder(outFile, ac, folders)
         
-        String scriptName = 'account_calc_gaps'
+        String scriptName = 'feedback_comments_list'
         def sc = scripts.find { it.name==scriptName }
         b.load(sc as ScriptJson)
         b.saveResult()

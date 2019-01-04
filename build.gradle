@@ -5,7 +5,7 @@ apply plugin: 'groovy'
  */
 apply plugin: 'maven'
 group = 'io.appery'
-version = '1.01'
+version = '1.10'
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -31,10 +31,10 @@ jar {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.5.4'
+    compile 'org.codehaus.groovy:groovy-all:2.5.5'
     compile 'org.apache.httpcomponents:httpclient:4.5.6'
     //compile 'com.google.code.gson:gson:2.8.0' 
-    testCompile "org.spockframework:spock-core:1.1-groovy-2.4"
+    testCompile "org.spockframework:spock-core:1.2-groovy-2.5"
 }
 
 /* Asciidoclet links:
@@ -85,28 +85,29 @@ task zip(type: Zip) {
 }
 */
 
-/*
-task zip {
-    version = 1.00
-    ant.delete(dir: "build/distr")
-    ant.copy(todir: "build/distr/apperyunit-${version}") {
-        fileset(dir: "build/libs") {
-            include(name: "apperyunit-${version}.jar")
+
+task distr {
+    doLast {
+        println "--- version: " + version
+        ant.delete(dir: "build/distr")
+        ant.copy(todir: "build/distr/apperyunit-${version}") {
+            fileset(dir: "build/libs") {
+                include(name: "apperyunit-${version}.jar")
+            }
+            fileset(dir: ".") {
+                include(name: "README.html")
+                include(name: "au.bat")
+                include(name: "au")
+                include(name: "libraries/dependencies.json")
+                include(name: "helloappery.js")
+                include(name: "libraries/helloappery_lib.js")
+                include(name: "license.txt")
+                include(name: "images/*.*")
+                include(name: "parameters/*.*")
+            }
         }
-        fileset(dir: ".") {
-            include(name: "README.html")
-            include(name: "au.bat")
-            include(name: "au.sh")
-            include(name: "dependencies.json")
-            include(name: "helloappery.js")
-            include(name: "helloappery_lib.js")
-            include(name: "license.txt")
-            include(name: "images/*.*")
-            include(name: "parameters/*.*")
+        ant.zip(destfile: "build/apperyunit-${version}.zip") {
+            fileset(dir: "build/distr") 
         }
-    }
-    ant.zip(destfile: "build/apperyunit-${version}.zip") {
-        fileset(dir: "build/distr") 
     }
 }
-*/

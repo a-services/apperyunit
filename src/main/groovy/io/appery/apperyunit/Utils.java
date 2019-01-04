@@ -18,7 +18,7 @@ class Utils {
      * App version number. If different from the number defined in `ApperyUnit` DB,
      * then GUI will suggest to upgrade.
      */
-    public static String apperyUnitVersion = "1.01";
+    public static String apperyUnitVersion = "1.10";
 
     /**
      * Folder name related to current folder where we'll look for 
@@ -120,6 +120,13 @@ class Utils {
     static String xmp(String s) {
         return s.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
                 .replaceAll(">", "&gt;").replaceAll("\"", "&quot;");
+    }
+    
+    /**
+     * Checks if a string is empty or `null`.
+     */
+    static boolean isEmpty(String s) {
+        return s==null || s.trim().length()==0;
     }
     
     /**

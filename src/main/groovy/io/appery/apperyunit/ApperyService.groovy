@@ -402,10 +402,22 @@ public class ApperyService {
             return;
         }
         curObj = node.getUserObject();
-        String scriptName = curObj.name
 
         setCurrentDependencies()
+        reloadButtonStates()
+        buildParamList();
 
+        dashboardFrame.scriptNameLabel.setText("<html>${curScriptNameText()}</html>");
+        //if (statusBk!=null) {
+        dashboardFrame.scriptNamePanel.setBackground(UIManager.getColor("Panel.background"));
+        dashboardFrame.scriptNameLabel.setForeground(UIManager.getColor("Panel.foreground"));
+
+        dashboardFrame.downloadButton.setEnabled(true)
+        dashboardFrame.swaggerButton.setEnabled(true)
+    }
+    
+    void reloadButtonStates() {
+        String scriptName = curObj.name
         if (curObj.isScript) {
             File paramsFile = new File(paramsFolder, scriptName+'.params')
             String text = paramsFile.exists()? paramsFile.text : ""
@@ -414,32 +426,29 @@ public class ApperyService {
             dashboardFrame.paramsQueryArea.setEditable(true)
             dashboardFrame.paramsBodyArea.setText(params[1])
             dashboardFrame.paramsBodyArea.setEditable(true)
+
+            boolean scriptExists = new File(scriptName+'.js').exists()
+            dashboardFrame.runButton.setEnabled(scriptExists)
+
+            File successFile = new File(fixturesFolder + '/' + scriptName + '/' + scriptName+'.success.json')
+            dashboardFrame.echoButton.setEnabled(successFile.exists())
+            dashboardFrame.testButton.setEnabled(successFile.exists())
+
         } else {
             dashboardFrame.paramsQueryArea.setText("")
             dashboardFrame.paramsQueryArea.setEditable(false)
             dashboardFrame.paramsBodyArea.setText("")
             dashboardFrame.paramsBodyArea.setEditable(false)
+
+            dashboardFrame.runButton.setEnabled(false);
+            dashboardFrame.echoButton.setEnabled(false);
+            dashboardFrame.testButton.setEnabled(false);
         }
-
-        dashboardFrame.scriptNameLabel.setText("<html>${curScriptNameText()}</html>");
-        //if (statusBk!=null) {
-        dashboardFrame.scriptNamePanel.setBackground(UIManager.getColor("Panel.background"));
-        dashboardFrame.scriptNameLabel.setForeground(UIManager.getColor("Panel.foreground"));
-
-
-        dashboardFrame.downloadButton.setEnabled(true)
-        dashboardFrame.swaggerButton.setEnabled(true)
+        
         dashboardFrame.saveParamsButton.setEnabled(false)
-        boolean scriptExists = new File(scriptName+'.js').exists()
-        dashboardFrame.runButton.setEnabled(scriptExists)
-
-        File successFile = new File(fixturesFolder + '/' + scriptName + '/' + scriptName+'.success.json')
-        dashboardFrame.echoButton.setEnabled(successFile.exists())
-        dashboardFrame.testButton.setEnabled(successFile.exists())
-
-        buildParamList();
+        dashboardFrame.resetParamsButton.setEnabled(false) 
     }
-
+    
     String curScriptNameText() {
         String type = curObj.isScript? "script" : "folder"
         return "<b>${xmp(curObj.name)}</b> $type"
@@ -484,7 +493,7 @@ public class ApperyService {
 
             if (curObj.isScript) {
                 downloadScript(curObj.data as ScriptJson)
-                dashboardFrame.runButton.setEnabled(true)
+                reloadButtonStates()
             } else
             if (curObj.isRoot) {
                 console "--- Downloading all scripts ---"
@@ -747,12 +756,8 @@ public class ApperyService {
             dashboardFrame.paramsBodyArea.text = params.body
             console "File saved: ${scriptName}.params"
 
-            dashboardFrame.saveParamsButton.setEnabled(false);
-            dashboardFrame.resetParamsButton.setEnabled(false);
-            dashboardFrame.runButton.setEnabled(true);
-            dashboardFrame.echoButton.setEnabled(true);
-            dashboardFrame.testButton.setEnabled(true);
-            //dashboardFrame.logsButton.setEnabled(true);
+            reloadButtonStates()
+            
         } catch(JsonException e) {
             console '[ERROR] Cannot parse JSON parameters. Error message:'
             console "`"*80
@@ -793,20 +798,11 @@ public class ApperyService {
     
     void buttonResetParams() {
         String scriptName = curObj.name
-        File paramsFile = new File(paramsFolder, scriptName+'.params')
-        String text = paramsFile.exists()? paramsFile.text : ""
-        String[] params = ServerCode.extractBody(text)
-        dashboardFrame.paramsQueryArea.setText(params[0])
-        dashboardFrame.paramsQueryArea.setEditable(true)
-        dashboardFrame.paramsBodyArea.setText(params[1])
-        dashboardFrame.paramsBodyArea.setEditable(true)
+        reloadButtonStates()
         console "File reset: ${scriptName}.params"
 
-        dashboardFrame.saveParamsButton.setEnabled(false);
-        dashboardFrame.resetParamsButton.setEnabled(false);
-        dashboardFrame.runButton.setEnabled(true);
-        dashboardFrame.echoButton.setEnabled(true);
-        dashboardFrame.testButton.setEnabled(true);
+        //dashboardFrame.saveParamsButton.setEnabled(false);
+        //dashboardFrame.resetParamsButton.setEnabled(false);
     }
     
     /**

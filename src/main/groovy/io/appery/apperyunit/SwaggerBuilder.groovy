@@ -17,16 +17,14 @@ class SwaggerBuilder {
         this.folders = folders;
 
         swagger = [
-            "swagger": "2.0",
+            "openapi": "3.0.0",
             "info": [
               "title": "Appery.io Server Code",
               "description": "Server code functions",
               "version": "1.0.0"
             ],
-            "host": "api.appery.io",
-            "basePath": "/rest/1/code",
-            "schemes": [
-              "https"
+            "servers": [
+                [ "url": "https://api.appery.io/rest/1/code" ]
             ]
         ];
         
@@ -35,6 +33,16 @@ class SwaggerBuilder {
     
     void saveResult() {
         swagger.put("paths", paths)
+        swagger.put("components", [
+            "securitySchemes": [
+                "ApperySecurity": [
+                    "type": "apiKey",
+                    "name": "X-Appery-Session-Token",                    
+                    "in": "header"
+                    ]    
+                ]
+            ]);
+        /*
         swagger.put("securityDefinitions", [
             "ApperySecurity": [
                 "type": "apiKey",
@@ -42,6 +50,7 @@ class SwaggerBuilder {
                 "name": "X-Appery-Session-Token"                    
                 ]    
             ]);
+            */
         new File(outFile).text = JsonOutput.prettyPrint(JsonOutput.toJson(swagger))
         console "=== Swagger definitions saved: " + outFile
     }
@@ -58,10 +67,11 @@ class SwaggerBuilder {
         ];
         
         // Add description with link to server-code in Appery
-        String description = "https://appery.io/servercode/${script.guid}/edit <br>\n"
-        if (script.description!=null) {
-            description += script.description 
+        String description = ""
+        if (!isEmpty(script.description)) {
+            description = script.description 
         }
+        description += "\n> [Source](https://appery.io/servercode/${script.guid}/edit)    \n   \n   \n"
         serviceInfo.put("description", description)
         
         // Add parent folders as tags 
@@ -70,7 +80,7 @@ class SwaggerBuilder {
             serviceInfo.put("tags", [parentFolders.reverse().join(" / ")])
         }
         
-        if (script.database!=null) {
+        if (!isEmpty(script.database)) {
             serviceInfo.put("security", [["ApperySecurity": []]])
         }
         
@@ -83,23 +93,17 @@ class SwaggerBuilder {
                 serviceInfo.put("parameters", convertQueryParameters(details.testParams.urlParameters))
             }
 
-            if (method.equals("post") && details.testParams.body!=null && details.testParams.body.length()>0) {
-                serviceInfo.put("parameters", [
-                    "name": "body",
-                    "in": "body",
-                    "description": "Request body",
-                    "schema": [
-                        "properties": convertBodyParameters(details.testParams.body)
-                        ]
-                    ]);
+            if (method.equals("post")) {
+                serviceInfo.put("requestBody",[
+                    "content": convertBodyParameters(details.testParams.body, details.testParams.bodyMimeType)
+                ]);
             }
         } 
         
         serviceInfo.put("responses", [
-          "200": [
-            "description": "Successful operation"
-                ]
-            ]);
+          "200": [ "description": "Successful operation" ],
+          "default": [ "description": "Unexpected error" ]    
+          ]);
     
         Map info = new LinkedHashMap();
         info.put(method, serviceInfo)
@@ -110,23 +114,42 @@ class SwaggerBuilder {
     List convertQueryParameters(urlParameters) {
         return urlParameters.collect { key,value -> [
                 "name": key,
-                "value": value,    
+                "example": value,    
                 "in": "query",
-                "type": "string"
+                "schema": [
+                    "type": "string"
+                ]
             ]}
     }
 
-    List convertBodyParameters(bodyStr) {
+    Map convertBodyParameters(bodyStr, bodyMimeType) {
+        /*
+        Map result = new LinkedHashMap();
         try {
-            def body = apperyClient.jsonSlurper.parseText(bodyStr)
-            return body.collect { key,value -> [
-                "name": key,
-                "value": value,    
-                "type": "string"
-                ]}
+            if (isEmpty(bodyStr)) {
+                result = [ : ]
+            }
+            if (bodyMimeType=='application/json') {
+                def body = apperyClient.jsonSlurper.parseText(bodyStr)
+                def properties = body.collect { key,value -> [
+                    "name": key,
+                    "value": value    
+                    ]}
+                result = [
+                    "type": "object",
+                    "properties": properties,
+                    "type": "string"
+                    ]
+            } else {
+                result = [ : ]
+            }
         } catch (JsonException e) {
-            return []
+            result = [ : ]
         }
+        */
+        Map res = new LinkedHashMap();
+        res.put(bodyMimeType, [ "schema": [ "example": bodyStr ] ])
+        return res
     }
     
     boolean jsonEmpty(json) {

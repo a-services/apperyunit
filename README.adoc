@@ -3,12 +3,12 @@
 :source-highlighter: coderay
 :toc: macro
 :apperyref: https://docs.appery.io/reference
-:description: Use it to unit-test Appery.io server code functions.
+:description: Use it to unit-test Appery.io server-code functions.
 
-Use it to unit-test link:https://appery.io[Appery.io] server code functions.
+Use it to unit-test link:https://appery.io[Appery.io] server-code functions.
 
 Download::
-  icon:download[] {nbsp} link:distr/apperyunit-1.00.zip?dl=0[apperyunit-1.00.zip] {nbsp}(7.5M)
+  icon:download[] {nbsp} link:distr/apperyunit-1.10.zip?dl=0[apperyunit-1.10.zip] {nbsp}(14.2M)
 
 Source::
   icon:github[] {nbsp} https://github.com/a-services/apperyunit
@@ -22,62 +22,123 @@ link:https://java.com/ru/download/[Java] has to be available on the system to ru
 
 You can run it from shell scripts or just double-click `apperyunit.jar` file from the distribution.
 
-Appery Server Code API is supported for read functions.
-Functions of `Collection` that change data in Appery DB will just print request parameters to console.
+ApperyUnit supports link:appery.io[Appery.io] Server-Code API in read-only mode.
+It means that methods of `Collection` object that change data in Appery DB will just print request parameters to console.
 More details can be found at <<supported-apis>> section.
 
-Shell script `au.sh` provided to demonstrate the usage of ApperyUnit.
-Use this script to run `helloappery.js` server code function:
-```
-  ./au.sh
-```
-
-To run the test in echo mode add `e` parameter:
-```
-  ./au.sh e
-```
-
-To test the fixtures add `t` parameter:
-```
-  ./au.sh t
-```
+=== Command line
 
 image:images/console-test.png[Console Test]
 
-To start the application in GUI mode use `w` parameter:
+You can start the utility with `au` shell script.
+
+For example, to run the example of server-code provided in distribution from command-line, one can use:
+```
+  ./au helloappery.js
+```
+
+To run the script in <<echo_mode>>:
+```
+  ./au helloappery.js echo
+```
+
+To run the script in <<test_mode>>:
+```
+  ./au helloappery.js test
+```
+
+More info can be found at <<command_line>> section.
+
+=== GUI
+
+
+To start the application in GUI mode you can double-click `apperyunit.jar` file or run the script without parameters:
 
 ```
-  ./au.sh w
+  ./au
 ```
-
-Or you can just double-click `apperyunit.jar` from the distribution to open GUI.
 
 image:images/gui-test-2.png[GUI Test]
 
-NOTE: Clicking **Download** button for the root node allows to download all scripts from the account.
+<1> Server-codes in your workspace
+<2> Server-code libraries for the selected script
+<3> Query request parameters for the selected script
+<4> Body request parameters for the selected script
+<5> Output console
 
 == Usage scenarios
 
 image:images/apperyunit-infographics-v2.png[Data Flow]
 
+
 === Creating new scripts
 
-ApperyUnit can be used to create new Appery.io server code scripts. Let's suppose we have to implement some new functionality that can probably update the DB in some way. For example, we may need to delete some entity from the database afer some preliminary checks. Or maybe our service should change system status in some way. If we'll create some initial version of the script and then run it in Appery, then there is a good chance that some part of the script will be executed and the other one not due to some error. After we'll do some fix and run our code again, we can find out that the database entity that we are using for testing was changed, or necessary system status has gone.
+ApperyUnit can be used to create new Appery.io server-code scripts. Let's suppose we have to implement some new functionality that can probably update the DB in some way. For example, we may need to delete some entity from the database afer some preliminary checks. Or maybe our service should change system status in some way. If we'll create some initial version of the script and then run it in Appery, then there is a good chance that some part of the script will be executed and the other one will not due to some error. After we'll do some fix and run our code again, we can find out that the database entity that we are using for testing was already changed by our script.
 
-With ApperyUnit we have the convenience to save database read requests but actually do not run them. It allows to modify and run our code till we get some acceptable results. We can also inspect JSON data received from the database. We can even edit JSON files coming from database to achieve the required level of test coverage.
+With ApperyUnit we have the convenience to save database read requests but actually do not run them. It allows us to modify and run our code till we get some acceptable results. We can also inspect JSON data received from the database. We can even edit JSON files coming from database to achieve the required level of test coverage.
 
-The ability to run the code is particularly important for dynamic programming language like JavaScript that we are using for our server code scripts, when missing `var` operator for the variable declaration or some forgotten dependency checkbox in Appery can lead to run-time errors but are not diagnosed by the tools.
+The ability to run the code is particularly important for dynamic programming language like JavaScript that we are using for our server-code scripts, when missing `var` operator for the variable declaration or some forgotten dependency checkbox in Appery.io errors can lead to run-time errors much later, but are not diagnosed at the implementation stage.
 
-When our server code will be properly tested, we can copy it into Appery.io editor.
-With that approach database query results are saved locally. We can consider them to be the input data for our server code. Query parameters of database update requests can be treated as the expected results of our server code.
+When our server-code will be properly tested, we can copy it into Appery.io editor.
+With that approach database query results are saved locally. We can consider them to be the input data for our server-code. Query parameters of database update requests can be treated as the expected results of our server-code.
 
 === Refactoring the existing scripts
 
-With ApperyUnit we can load the existing versions of the scripts from Appery.io.
-We have already saved query parameters of database update requests on the previous step, so with the tests we can ensure that script outputs were not changed and our refactorings didn't break anything.
+With ApperyUnit we can also download the existing versions of the scripts from Appery.io cloud to local folder.
+Inputs and outputs of database requests are saved in `fixtures` folder, so running the script in test mode we can ensure that script outputs are not changed and our refactorings didn't break anything.
 
-== Dependencies
 
+[[echo_mode]]
+== Echo mode
+
+The result of each read request to Appery DB is saved in `fixtures` folder in files named `query_1.json`, `query_2.json`...
+
+When `echo` parameter is specified, then no real requests to Appery DB will be made, but the contents of `query_1.json`, `query_2.json`...  files will be used instead of HTTP requests.
+
+[[test_mode]]
+== Test mode
+
+Parameters of each *read* request to Appery DB are saved to files named like `query_r_1.json`, `query_r_2.json`...
+
+Similar, parameters of each *write* request are saved into `update_r_1.json`, `update_r_2.json`...
+
+The result of server-code execution is saved to `script_name.success.json` file.
+
+We assume that our server-code script is going to perform the same read and write requests to Appery DB after the refactoring.
+
+It should be mentioned that write requests to Appery DB are not actually executed by ApperyUnit, so database remains unchanged after the test and we can run it once again with the same results.
+
+When ApperyUnit is started in `test` mode, then read requests to Appery DB are replaced with echoes, and the contents of read and write request parameters
+are compared with the saved contents of `query_r_#.json`, `update_r_#.json` and `script_name.success.json` files.
+
+== Downloading server-codes to version control
+
+With ApperyUnit GUI one can download server-codes from Appery.io cloud to some local folder.
+That folder later can be put under version control to track code changes.
+
+Just select in left-side panel the server-code you want to download, or some folder, or even the root node of the tree
+and click *Download* button.
+
+== Documenting API with Swagger
+
+image:images/swagger.png[Swagger]
+
+One can export the information about REST API from Appery.io cloud in link:https://swagger.io/specification/[OpenAPI] format also known as Swagger.
+OpenAPI documentation is some JSON file that can be viewed with link:https://swagger.io/tools/swagger-ui/[Swagger UI]
+
+Generating OpenAPI documentation in ApperyUnit is quite simple: just select in left-side panel the server-code or the folder and click *Swagger* button. You will be asked about the name of file to generate, and `swagger.json` file will be generated.
+
+To use it you can:
+
+- Download the latest version of Swagger UI from link:https://github.com/swagger-api/swagger-ui[GitHub],
+- Place your `swagger.json` into `dist` folder
+- In `index.html` replace `https://petstore.swagger.io/v2/swagger.json` with just `swagger.json`
+- Open `index.html` from some local server. There are plenty of tools around that can provide you local server for testing,
+  maybe one of the easiest to use is link:https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb/[Web Server for Chrome]
+
+== Server-code libraries
+
+Libraries for server-code scripts are stored in `libraries` folder.
 Dependencies between the scripts can be specified in `dependencies.json` file.
 
 Example:
@@ -95,28 +156,8 @@ Example:
 <1> Script named `my_script_1` depends on 2 libraries
 <2> Libraries can have their own dependencies
 
-== Echo mode
 
-The result of each read request to Appery DB is saved in `fixtures` folder in files named `query_1.json`, `query_2.json`...
-
-When `echo` parameter is specified, then no real requests to Appery DB will be made, but the contents of `query_1.json`, `query_2.json`...  files will be returned in proper order.
-
-== Test mode
-
-Parameters of each *read* request to Appery DB are saved to files named like `query_r_1.json`, `query_r_2.json`...
-
-Similar, parameters of each *write* request are saved to `update_r_1.json`, `update_r_2.json`...
-
-The result of server code execution is saved to `script_name.success.json` file.
-
-We assume that our server code script is going to perform the same read and write requests to Appery DB after the refactoring.
-
-It should be mentioned that write requests to Appery DB are not actually executed by ApperyUnit, so database remains unchanged after the test and we can run it once again with the same results.
-
-When ApperyUnit is started in `test` mode, then read requests to Appery DB are replaced with echoes, and the contents of read and write request parameters
-are compared with the saved contents of `query_r_#.json`, `update_r_#.json` and `script_name.success.json` files.
-
-
+[[command_line]]
 == Command-line parameters
 
 To try something else rather then simple `helloappery` script you can create some empty folder
@@ -126,11 +167,11 @@ folder where you placed the distribution of ApperyUnit.
 You can pass the following parameters to `$AU` utility in `au.sh` file:
 
 script_name.js::
-    This is the name of local file with server code. +
+    This is the name of local file with server-code. +
     Required if we are not in downloading mode.
 
 script_name.params::
-    Parameters of server code function can be specified in <<params>> as JSON
+    Parameters of server-code function can be specified in <<params>> as JSON
 
 echo::
     Run script in echo mode - do not perform real `HTTP GET` requests but use
@@ -145,7 +186,7 @@ test::
 [[params]]
 === `.params` file
 
-- Parameters of server code function can be specified in `.params` file as JSON
+- Parameters of server-code function can be specified in `.params` file as JSON
 
 - Request headers can be also specified in this JSON as a special `headers` field.
 
@@ -175,9 +216,9 @@ Example:
 ```
 ====
 
-<1> Parameters of server code function
+<1> Parameters of server-code function
 <2> Request headers
-<3> When server code function is secured, than it has `user` parameter in request
+<3> When server-code function is secured, then it has `user` parameter in request
 <4> Request body string
 
 
@@ -185,7 +226,7 @@ Example:
 === `.paramlist` file
 
 Each new test scenario requires its own parameters, so we need a set
-of `.params` files associated with the single server code script.
+of `.params` files associated with the single server-code script.
 This can be specified with `.paramlist` file.
 
 Each line in `.paramlist` is a name of `.params` file,
@@ -193,12 +234,12 @@ or it can be empty, or commented out with `#` character.
 
 
 [[supported-apis]]
-== Supported Server Code Functions
+== Supported Server-Code Functions
 
-ApperyUnit is intended to be used to unit-test Appery Server Code functions.
+ApperyUnit is intended to be used to unit-test Appery.io Server-Code functions.
 To be able to run tests multiple times the functions of `Collection` object that change data in Appery DB will just print request parameters to console but not actually change anything in DB.
 
-Also, some link:{apperyref}[Appery Server Code APIs] are not yet supported by ApperyUnit.
+Also, some link:{apperyref}[Appery Server-Code APIs] are not yet supported by ApperyUnit.
 Current status can be found at the table below.
 
 === Console
