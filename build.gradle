@@ -6,9 +6,10 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 group = 'io.appery'
 
-/* Version is specified in 3 places:
+/* Version is specified in 4 places:
  * - in this file
  * - in `Utils` class
+ * - in `README.adoc`
  * - in Appery DB
  */
 version = '1.11'
