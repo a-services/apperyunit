@@ -5,7 +5,13 @@ apply plugin: 'groovy'
  */
 apply plugin: 'maven'
 group = 'io.appery'
-version = '1.10'
+
+/* Version is specified in 3 places:
+ * - in this file
+ * - in `Utils` class
+ * - in Appery DB
+ */
+version = '1.11'
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
@@ -74,40 +80,51 @@ groovydoc {
     ]
 }
 
-/*
-task zip(type: Zip) {
-    version = 0.99
-    from 'build/libs/'
-    into("apperyunit-0.99") {
-        include 'apperyunit.jar'
-    }
-    destinationDir(file('build'))
-}
-*/
-
-
 task distr {
     doLast {
         println "--- version: " + version
+        
+        // Delete existing `build/distr`
         ant.delete(dir: "build/distr")
+        
+        // Collect distribution files in `build/distr`.
+        // This preliminary step is needed to create "apperyunit-${version}" folder in archive. 
         ant.copy(todir: "build/distr/apperyunit-${version}") {
             fileset(dir: "build/libs") {
                 include(name: "apperyunit-${version}.jar")
             }
             fileset(dir: ".") {
                 include(name: "README.html")
-                include(name: "au.bat")
-                include(name: "au")
+                //include(name: "au.bat")
+                //include(name: "au")
                 include(name: "libraries/dependencies.json")
                 include(name: "helloappery.js")
                 include(name: "libraries/helloappery_lib.js")
                 include(name: "license.txt")
-                include(name: "images/*.*")
                 include(name: "parameters/*.*")
             }
         }
+        
+        // Create shell scripts
+        new File("build/distr/apperyunit-${version}/au").text = """
+            #!/usr/bin/env bash
+            AU_JAR=apperyunit-${version}.jar
+            java -cp \$AU_JAR io.appery.apperyunit.au "\$@"
+        """.stripIndent().trim()
+        new File("build/distr/apperyunit-${version}/au.bat").text = """
+            @echo off
+            set AU_JAR=apperyunit-${version}.jar
+            java -cp %AU_JAR% io.appery.apperyunit.au %*
+        """.stripIndent().trim()
+        
+        // Create zip file in `build`
         ant.zip(destfile: "build/apperyunit-${version}.zip") {
-            fileset(dir: "build/distr") 
+            zipfileset(dir: "build/distr") {
+                exclude(name: "apperyunit-${version}/au")
+            }
+            zipfileset(dir: "build/distr", filemode: "755") {
+                include(name: "apperyunit-${version}/au")
+            }
         }
     }
 }

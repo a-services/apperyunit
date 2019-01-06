@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+<style>
+
+/* font-size:.75em; */
+
+.conum[data-value]{
+  display:inline-block;
+  color:#fff!important;
+  background-color:rgba(0,0,0,.8);
+  -webkit-border-radius:100px;
+  border-radius:100px;
+  text-align:center;
+  font-size:1em;
+  width:1.67em;
+  height:1.67em;
+  line-height:1.67em;
+  font-family:"Open Sans","DejaVu Sans",sans-serif;
+  font-style:normal;
+  font-weight:bold
+}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]:after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+
+.pos-1 {
+	position: absolute;
+	top: 730px;
+	left: 300px;
+}
+
+.pos-2 {
+	position: absolute;
+	top: 490px;
+	left: 675px;
+}
+
+.pos-3 {
+	position: absolute;
+	top: 295px;
+	left: 1320px;
+}
+
+.pos-4 {
+	position: absolute;
+	top: 460px;
+	left: 1320px;
+}
+
+.pos-5 {
+	position: absolute;
+	top: 735px;
+	left: 1295px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<i class="conum pos-1" data-value="1"></i><b>(1)</b>
+<i class="conum pos-2" data-value="2"></i><b>(2)</b>
+<i class="conum pos-3" data-value="3"></i><b>(3)</b>
+<i class="conum pos-4" data-value="4"></i><b>(4)</b>
+<i class="conum pos-5" data-value="5"></i><b>(5)</b>
+     
+<img src="gui-test.png">
+
+
+</body>
+
+</html>

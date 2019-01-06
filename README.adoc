@@ -8,7 +8,7 @@
 Use it to unit-test link:https://appery.io[Appery.io] server-code functions.
 
 Download::
-  icon:download[] {nbsp} link:distr/apperyunit-1.10.zip?dl=0[apperyunit-1.10.zip] {nbsp}(14.2M)
+  icon:download[] {nbsp} link:http://apperyunit.app.appery.io/distr/apperyunit-1.11.zip?dl=0?dl=0[apperyunit-1.11.zip] {nbsp}(~13M)
 
 Source::
   icon:github[] {nbsp} https://github.com/a-services/apperyunit
@@ -28,7 +28,7 @@ More details can be found at <<supported-apis>> section.
 
 === Command line
 
-image:images/console-test.png[Console Test]
+image:https://raw.githubusercontent.com/a-services/apperyunit/master/images/console-test.png[Console Test]
 
 You can start the utility with `au` shell script.
 
@@ -58,7 +58,7 @@ To start the application in GUI mode you can double-click `apperyunit.jar` file 
   ./au
 ```
 
-image:images/gui-test-2.png[GUI Test]
+image:https://raw.githubusercontent.com/a-services/apperyunit/master/images/gui-test-2.png[GUI Test]
 
 <1> Server-codes in your workspace
 <2> Server-code libraries for the selected script
@@ -68,7 +68,7 @@ image:images/gui-test-2.png[GUI Test]
 
 == Usage scenarios
 
-image:images/apperyunit-infographics-v2.png[Data Flow]
+image:https://raw.githubusercontent.com/a-services/apperyunit/master/images/apperyunit-infographics-v2.png[Data Flow]
 
 
 === Creating new scripts
@@ -121,7 +121,7 @@ and click *Download* button.
 
 == Documenting API with Swagger
 
-image:images/swagger.png[Swagger]
+image:https://raw.githubusercontent.com/a-services/apperyunit/master/images/swagger.png[Swagger]
 
 One can export the information about REST API from Appery.io cloud in link:https://swagger.io/specification/[OpenAPI] format also known as Swagger.
 OpenAPI documentation is some JSON file that can be viewed with link:https://swagger.io/tools/swagger-ui/[Swagger UI]
