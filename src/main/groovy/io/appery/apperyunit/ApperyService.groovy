@@ -609,7 +609,7 @@ public class ApperyService {
             //sc.dependencyList scriptName + '.dependencies'
             sc.addDependencies(scriptName)
 
-            console ""
+            console_area.setText ""
             console "Script name: $scriptName"
             console '-'*80
 
@@ -657,7 +657,7 @@ public class ApperyService {
             String scriptName = curObj.name
             sc.dependencyList scriptName + '.dependencies'
 
-            console ""
+            console_area.setText ""
             console "Script name: $scriptName"
             console '-'*80
 
@@ -703,7 +703,7 @@ public class ApperyService {
             String scriptName = curObj.name
             sc.dependencyList scriptName + '.dependencies'
 
-            console ""
+            console_area.setText ""
             console "Script name: $scriptName"
             console '-'*80
 
