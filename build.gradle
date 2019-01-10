@@ -12,7 +12,7 @@ group = 'io.appery'
  * - in `README.adoc`
  * - in Appery DB
  */
-version = '1.11'
+version = '1.12'
 
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'

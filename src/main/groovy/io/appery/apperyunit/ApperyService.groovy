@@ -95,8 +95,12 @@ public class ApperyService {
                 return
             }
             */
-            f.text = details.sourceCode;
-            console "Script saved: ${bold}${scriptName}.js${norm}"
+            if (f.exists() && f.text==details.sourceCode) {
+                console " Not changed: ${bold}${scriptName}.js${norm}"
+            } else {
+                f.text = details.sourceCode;
+                console "Script saved: ${bold}${scriptName}.js${norm}"
+            }
             //saveDependencies(script)
             updateJsonDependencies(script)
             saveScriptParams(script, details)
