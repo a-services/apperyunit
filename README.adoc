@@ -186,7 +186,7 @@ test::
 [[params]]
 === `.params` file
 
-- Parameters of server-code function can be specified in `.params` file as JSON
+- Parameters of server-code function can be specified in `.params` file as JSON. Such files should be placed at `parameters` folder.
 
 - Request headers can be also specified in this JSON as a special `headers` field.
 
