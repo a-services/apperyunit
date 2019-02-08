@@ -91,16 +91,16 @@ Inputs and outputs of database requests are saved in `fixtures` folder, so runni
 [[echo_mode]]
 == Echo mode
 
-The result of each read request to Appery DB is saved in `fixtures` folder in files named `query_1.json`, `query_2.json`...
+The result of each read request to Appery DB is saved in `fixtures` folder in files named `01_query.json`, `02_query.json`...
 
-When `echo` parameter is specified, then no real requests to Appery DB will be made, but the contents of `query_1.json`, `query_2.json`...  files will be used instead of HTTP requests.
+When `echo` parameter is specified, then no real requests to Appery DB will be made, but the contents of `01_query.json`, `02_query.json`...  files will be used instead of HTTP requests.
 
 [[test_mode]]
 == Test mode
 
-Parameters of each *read* request to Appery DB are saved to files named like `query_r_1.json`, `query_r_2.json`...
+Parameters of each *read* request to Appery DB are saved to files named like `01_query_r.json`, `02_query_r.json`...
 
-Similar, parameters of each *write* request are saved into `update_r_1.json`, `update_r_2.json`...
+Similar, parameters of each *write* request are saved into `01_update_r.json`, `02_update_r.json`...
 
 The result of server-code execution is saved to `script_name.success.json` file.
 
@@ -109,7 +109,7 @@ We assume that our server-code script is going to perform the same read and writ
 It should be mentioned that write requests to Appery DB are not actually executed by ApperyUnit, so database remains unchanged after the test and we can run it once again with the same results.
 
 When ApperyUnit is started in `test` mode, then read requests to Appery DB are replaced with echoes, and the contents of read and write request parameters
-are compared with the saved contents of `query_r_#.json`, `update_r_#.json` and `script_name.success.json` files.
+are compared with the saved contents of `nn_query_r.json`, `nn_update_r.json` and `script_name.success.json` files.
 
 == Downloading server-codes to version control
 

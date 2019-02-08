@@ -144,19 +144,19 @@ class ApperyCollection {
 
     String nextUpdateParamFileName() {
         updateCount++
-        return "update_r_${updateCount}.json"
+        return "${updateCount.toString().padLeft(2,'0')}_update_r.json"
     }
 
     String updateFileName() {
-        return "update_${updateCount}.json"
+        return "${updateCount.toString().padLeft(2,'0')}_update_.json"
     }
 
     String queryParamFileName() {
-        return "query_r_${queryCount}.json"
+        return "${queryCount.toString().padLeft(2,'0')}_query_r.json"
     }
 
     String queryFileName() {
-        return "query_${queryCount}.json"
+        return "${queryCount.toString().padLeft(2,'0')}_query.json"
     }
 
     boolean nashornEmptyValue(token) {
