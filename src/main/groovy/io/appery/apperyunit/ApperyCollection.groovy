@@ -148,7 +148,7 @@ class ApperyCollection {
     }
 
     String updateFileName() {
-        return "${updateCount.toString().padLeft(2,'0')}_update_.json"
+        return "${updateCount.toString().padLeft(2,'0')}_update.json"
     }
 
     String queryParamFileName() {
@@ -650,7 +650,7 @@ class ApperyCollection {
             status = 200
             File respFile = new File(outFolder, fname)
             if (respFile.exists()) {
-                respBody = respFile.text
+                respBody = JsonOutput.prettyPrint(respFile.text)
             } else {
                 respBody = '{ "success":true }'
             }
