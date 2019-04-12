@@ -216,6 +216,13 @@ public class ApperyClient extends ApperyRestClient {
     String downloadScript(String scriptGuid) {
         return traceGet('Server code script', '/bksrv/rest/1/code/admin/script/' + scriptGuid);
     }
+    
+    /**
+     * Update server code script.
+     */
+    String updateScript(String scriptGuid, String scriptData) {
+        return tracePut('Server code update result', '/bksrv/rest/1/code/admin/script/' + scriptGuid, scriptData)
+    }
 
     // -------------- Database
 
@@ -317,6 +324,10 @@ public class ApperyClient extends ApperyRestClient {
     void saveFile(text, String fname) {
         new File(fname).text = text
         console "$ital`$fname`$norm saved"
+    }
+
+    String readFile(String fname) {
+        return new File(fname).text
     }
 
     void delay(int ms) {
