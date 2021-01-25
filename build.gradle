@@ -28,20 +28,21 @@ repositories {
 jar {
     baseName = 'apperyunit'
 
-    manifest { 
+    manifest {
         attributes "Main-Class": "io.appery.apperyunit.au"
-    }  
+    }
 
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }  
+        configurations.compileClasspath.filter{ it.exists() }
+            .collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.5.6'
-    compile 'org.apache.httpcomponents:httpclient:4.5.6'
-    //compile 'com.google.code.gson:gson:2.8.0' 
-    testCompile "org.spockframework:spock-core:1.2-groovy-2.5"
+    implementation 'org.codehaus.groovy:groovy-all:3.0.7'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.6'
+    //compile 'com.google.code.gson:gson:2.8.0'
+    testImplementation "org.spockframework:spock-core:2.0-M4-groovy-3.0"
 }
 
 /* Asciidoclet links:
@@ -69,7 +70,7 @@ javadoc {
     ]
     options.noQualifiers = ['java.lang', 'java.util']
     options.memberLevel = JavadocMemberLevel.PACKAGE
-    options.addStringOption "-base-dir", "${projectDir}" 
+    options.addStringOption "-base-dir", "${projectDir}"
 }
 
 import org.gradle.api.tasks.javadoc.*
@@ -77,19 +78,19 @@ import org.gradle.api.tasks.javadoc.*
 groovydoc {
     links = [
         new Groovydoc.Link("http://docs.oracle.com/javase/8/docs/api/", \
-                           "java.", "javax.")  
+                           "java.", "javax.")
     ]
 }
 
 task distr {
     doLast {
         println "--- version: " + version
-        
+
         // Delete existing `build/distr`
         ant.delete(dir: "build/distr")
-        
+
         // Collect distribution files in `build/distr`.
-        // This preliminary step is needed to create "apperyunit-${version}" folder in archive. 
+        // This preliminary step is needed to create "apperyunit-${version}" folder in archive.
         ant.copy(todir: "build/distr/apperyunit-${version}") {
             fileset(dir: "build/libs") {
                 include(name: "apperyunit-${version}.jar")
@@ -105,7 +106,7 @@ task distr {
                 include(name: "parameters/*.*")
             }
         }
-        
+
         // Create shell scripts
         new File("build/distr/apperyunit-${version}/au").text = """
             #!/usr/bin/env bash
@@ -117,7 +118,7 @@ task distr {
             set AU_JAR=apperyunit-${version}.jar
             java -cp %AU_JAR% io.appery.apperyunit.au %*
         """.stripIndent().trim()
-        
+
         // Create zip file in `build`
         ant.zip(destfile: "build/apperyunit-${version}.zip") {
             zipfileset(dir: "build/distr") {

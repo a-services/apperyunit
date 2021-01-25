@@ -216,7 +216,7 @@ public class ApperyClient extends ApperyRestClient {
     String downloadScript(String scriptGuid) {
         return traceGet('Server code script', '/bksrv/rest/1/code/admin/script/' + scriptGuid);
     }
-    
+
     /**
      * Update server code script.
      */
