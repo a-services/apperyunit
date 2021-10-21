@@ -1,3 +1,3 @@
 @echo off
-set AU_JAR=apperyunit-1.10.jar
-java -cp %AU_JAR% io.appery.apperyunit.au %*
+set AU_JAR=apperyunit-1.12.jar
+java -Dnashorn.args=--language=es6 -cp %AU_JAR% io.appery.apperyunit.au %*

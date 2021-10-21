@@ -30,7 +30,7 @@ public class ApperyClient extends ApperyRestClient {
      * if this property is not null.
      * It is based on static `scriptName` property.
      */
-    String outFolder;
+    public String outFolder;
     static String scriptName;
 
     boolean echoMode = false;
@@ -40,7 +40,7 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Create another instance of ApperyClient to use it from JavaScript.
      */
-    static ApperyClient newInstance() {
+    public static ApperyClient newInstance() {
         if (script_name==null) {
             // We expect global variable `script_name` defined in `Utils` to exist.
             throw new ApperyUnitException("Missing script name in ApperyClient");
@@ -59,7 +59,7 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Performs SAML login with default credentials.
      */
-    boolean doLogin(String targetPath) {
+    public boolean doLogin(String targetPath) {
         String auDebug = System.getenv("AU_DEBUG");
         if (auDebug==null) {
             return false;
@@ -74,14 +74,14 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Performs SAML login to access Appery.io backend functions.
      */
-    boolean doLogin(String username, String password) {
+    public boolean doLogin(String username, String password) {
         return doLogin(username, password, "/bksrv/")
     }
 
     /**
      * Performs SAML login into Appery.io site.
      */
-    boolean doLogin(String username, String password, String targetPath) {
+    public boolean doLogin(String username, String password, String targetPath) {
         try {
 			if (!echoMode) {
                 new ApperySecurity(this).doLogin(username, password, targetPath);
@@ -98,7 +98,7 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Performs login to access standalone API Express.
      */
-    boolean standaloneLogin(String username, String password) {
+    public boolean standaloneLogin(String username, String password) {
         try {
 			if (!echoMode) {
                 new ApperySecurity(this).standaloneLogin(username, password);
@@ -117,28 +117,28 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Get list of existing projects in Appery.io workspace.
      */
-    String loadProjectList() {
+    public String loadProjectList() {
         return traceGet('List of projects', '/app/rest/projects');
     }
 
     /**
      * Get information about project in Appery.io workspace.
      */
-    String loadProjectInfo(String guid) {
+    public String loadProjectInfo(String guid) {
         return traceGet('Project information', '/app/rest/html5/project', ['guid':guid]);
     }
 
     /**
      * Get available templates to create projects in Appery.io workspace.
      */
-    String loadProjectTemplates() {
+    public String loadProjectTemplates() {
         return traceGet('Project templates', '/app/rest/html5/plugin/wizardProject');
     }
 
     /**
      * Create project in Appery.io workspace.
      */
-    String createApperyProject(String projectName, int projectType) {
+    public String createApperyProject(String projectName, int projectType) {
         String data = JsonOutput.toJson(["name":projectName,"templateId":projectType])
         return tracePost('Project creation result', '/app/rest/projects', data)
     }
@@ -146,7 +146,7 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Load list of assets for Appery.io project.
      */
-    String loadProjectAssets(String projectGuid, List<String> assets) {
+    public String loadProjectAssets(String projectGuid, List<String> assets) {
         String data = JsonOutput.toJson(["assets": assets.collect { ['id':it] }])
         return tracePost('List of assets', '/app/rest/html5/project/' + projectGuid + '/asset/data', data)
     }
@@ -154,7 +154,7 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Update list of assets in Appery.io project.
      */
-    String updateProjectAssets(String projectGuid, String assetsData) {
+    public String updateProjectAssets(String projectGuid, String assetsData) {
         return tracePut('List of assets update result', '/app/rest/html5/project/' + projectGuid + '/asset/data', assetsData)
     }
 
@@ -163,7 +163,7 @@ public class ApperyClient extends ApperyRestClient {
      * @param projectGuidType  Project GUID concatenated with project type.
      *                         Example: projectGuid + '/IONIC/'
      */
-    String loadSourceInfo(projectGuidType) {
+    public String loadSourceInfo(projectGuidType) {
         try {
             return traceGet('Source info', '/app/rest/html5/ide/source/read/' + projectGuidType);
         } catch (ApperyUnitException e) {
@@ -174,21 +174,21 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Load source file by id.
      */
-    String loadSource(srcId) {
+    public String loadSource(srcId) {
         return makeGet('/app/rest/html5/ide/source/' + srcId + '/read/data');
     }
 
     /**
      * Get list of certificates in Appery.io workspace.
      */
-    String loadCertificateList() {
+    public String loadCertificateList() {
         return traceGet('List of certificates', '/app/rest/certificates');
     }
 
     /**
      * Get information about certificate in Appery.io workspace.
      */
-    String loadCertificateInfo(String uuid) {
+    public String loadCertificateInfo(String uuid) {
         return traceGet('List of certificates', '/app/rest/certificates/' + uuid);
     }
 
@@ -198,7 +198,7 @@ public class ApperyClient extends ApperyRestClient {
      * Returns list of server code scripts and libraries
      * in Appery.io workspace. Metainformation about scripts included.
      */
-    String loadServerCodesList() {
+    public String loadServerCodesList() {
         return traceGet('List of server code scripts and libraries', '/bksrv/rest/1/code/admin/script/?light=true');
     }
 
@@ -206,21 +206,21 @@ public class ApperyClient extends ApperyRestClient {
      * Returns list of server code folders
      * in Appery.io workspace. Metainformation included.
      */
-    String loadServerCodesFolders() {
+    public String loadServerCodesFolders() {
         return traceGet('List of server code folders', '/bksrv/rest/1/code/admin/folders/');
     }
 
     /**
      * Download server code script.
      */
-    String downloadScript(String scriptGuid) {
+    public String downloadScript(String scriptGuid) {
         return traceGet('Server code script', '/bksrv/rest/1/code/admin/script/' + scriptGuid);
     }
 
     /**
      * Update server code script.
      */
-    String updateScript(String scriptGuid, String scriptData) {
+    public String updateScript(String scriptGuid, String scriptData) {
         return tracePut('Server code update result', '/bksrv/rest/1/code/admin/script/' + scriptGuid, scriptData)
     }
 
@@ -229,14 +229,14 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Get list of existing databases in Appery.io workspace.
      */
-    String loadDatabaseList() {
+    public String loadDatabaseList() {
         return traceGet('List of databases', '/bksrv/rest/1/admin/databases');
     }
 
     /**
      * Get list of collections in Appery.io database.
      */
-    String loadCollectionList(String dbid) {
+    public String loadCollectionList(String dbid) {
         return traceGet('List of collections', '/bksrv/rest/1/admin/collections', null, ['X-Appery-Database-Id':dbid]);
     }
 
@@ -245,21 +245,21 @@ public class ApperyClient extends ApperyRestClient {
     /**
      * Get list of AEX projects in Appery.io workspace.
      */
-    String loadAexProjectList() {
+    public String loadAexProjectList() {
         return traceGet('List of AEX projects', '/apiexpress/rest/projects');
     }
 
     /**
      * Returns list of AEX folders in Appery.io workspace
      */
-    String loadAexFolders(String projectRootId) {
+    public String loadAexFolders(String projectRootId) {
         return traceGet('List of AEX folders', '/apiexpress/rest/folders/' + projectRootId + '/children');
     }
 
     /**
      * Returns list of AEX services in project folder
      */
-    String loadAexServices(String folderId) {
+    public String loadAexServices(String folderId) {
         return traceGet('List of AEX services', '/apiexpress/rest/service/custom/' + folderId + '/children');
     }
 
@@ -316,7 +316,7 @@ public class ApperyClient extends ApperyRestClient {
 		return result
     }
 
-    void saveJson(String jsonData, String fname) {
+    public void saveJson(String jsonData, String fname) {
         new File(fname).text = JsonOutput.prettyPrint(jsonData); //JsonOutput.toJson(jsonData))
         console "$ital`$fname`$norm saved"
     }

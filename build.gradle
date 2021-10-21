@@ -39,7 +39,7 @@ jar {
 }
 
 dependencies {
-    implementation 'org.codehaus.groovy:groovy-all:3.0.7'
+    implementation 'org.codehaus.groovy:groovy-all:3.0.9'
     implementation 'org.apache.httpcomponents:httpclient:4.5.6'
     //compile 'com.google.code.gson:gson:2.8.0'
     testImplementation "org.spockframework:spock-core:2.0-M4-groovy-3.0"
@@ -56,13 +56,14 @@ configurations {
     asciidoclet
 }
 
+/*
 dependencies {
     asciidoclet 'org.asciidoctor:asciidoclet:1.+'
 }
 
 javadoc {
-    options.docletpath = configurations.asciidoclet.files.asType(List)
-    options.doclet = 'org.asciidoctor.Asciidoclet'
+    //options.docletpath = configurations.asciidoclet.files.asType(List)
+    //options.doclet = 'org.asciidoctor.Asciidoclet'
     options.overview = "src/main/groovy/overview.adoc"
     options.links = [
         'http://docs.oracle.com/javase/8/docs/api/',
@@ -72,6 +73,7 @@ javadoc {
     options.memberLevel = JavadocMemberLevel.PACKAGE
     options.addStringOption "-base-dir", "${projectDir}"
 }
+*/
 
 import org.gradle.api.tasks.javadoc.*
 
@@ -86,6 +88,19 @@ task distr {
     doLast {
         println "--- version: " + version
 
+        // Create shell scripts with proper version
+        String javaOptions = "-Dnashorn.args=--language=es6"
+        new File("au").text = """
+            #!/usr/bin/env bash
+            AU_JAR=apperyunit-${version}.jar
+            java ${javaOptions} -cp \$AU_JAR io.appery.apperyunit.au "\$@"
+        """.stripIndent().trim()
+        new File("au.bat").text = """
+            @echo off
+            set AU_JAR=apperyunit-${version}.jar
+            java ${javaOptions} -cp %AU_JAR% io.appery.apperyunit.au %*
+        """.stripIndent().trim()
+
         // Delete existing `build/distr`
         ant.delete(dir: "build/distr")
 
@@ -96,9 +111,11 @@ task distr {
                 include(name: "apperyunit-${version}.jar")
             }
             fileset(dir: ".") {
+
+                include(name: "au.bat")
+                include(name: "au")
+
                 include(name: "README.html")
-                //include(name: "au.bat")
-                //include(name: "au")
                 include(name: "libraries/dependencies.json")
                 include(name: "helloappery.js")
                 include(name: "libraries/helloappery_lib.js")
@@ -111,12 +128,12 @@ task distr {
         new File("build/distr/apperyunit-${version}/au").text = """
             #!/usr/bin/env bash
             AU_JAR=apperyunit-${version}.jar
-            java -cp \$AU_JAR io.appery.apperyunit.au "\$@"
+            java -Dnashorn.args=--language=es6 -cp \$AU_JAR io.appery.apperyunit.au "\$@"
         """.stripIndent().trim()
         new File("build/distr/apperyunit-${version}/au.bat").text = """
             @echo off
             set AU_JAR=apperyunit-${version}.jar
-            java -cp %AU_JAR% io.appery.apperyunit.au %*
+            java -Dnashorn.args=--language=es6 -cp %AU_JAR% io.appery.apperyunit.au %*
         """.stripIndent().trim()
 
         // Create zip file in `build`
