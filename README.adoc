@@ -4,11 +4,12 @@
 :toc: macro
 :apperyref: https://docs.appery.io/reference
 :description: Use it to unit-test Appery.io server-code functions.
+:au-version: 1.12
 
 Use it to unit-test link:https://appery.io[Appery.io] server-code functions.
 
 Download::
-  icon:download[] {nbsp} link:http://apperyunit.app.appery.io/distr/apperyunit-1.11.zip?dl=0?dl=0[apperyunit-1.11.zip] {nbsp}(~13M)
+  icon:download[] {nbsp} link:http://apperyunit.app.appery.io/distr/apperyunit-{au-version}.zip?dl=0?dl=0[apperyunit-{au-version}.zip] {nbsp}(~13M)
 
 Source::
   icon:github[] {nbsp} https://github.com/a-services/apperyunit
