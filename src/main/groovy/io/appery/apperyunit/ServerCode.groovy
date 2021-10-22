@@ -49,7 +49,7 @@ class ServerCode {
         String Apperyio_requestParams = '{}'
         if (params[0].trim().length()>0) {
             Apperyio_requestParams = params[0].trim()
-        } 
+        }
         console " $bold Params:$norm $Apperyio_requestParams"
 
         /*
@@ -70,7 +70,7 @@ class ServerCode {
         // Template for JavaScript stub
         String jsHeader = """
             // :folding=explicit:collapseFolds=1:
-            // {{{ Definitions for Appery server-code functions 
+            // {{{ Definitions for Appery server-code functions
             var Apperyio_requestParams = $Apperyio_requestParams;
             var Apperyio_body = '$Apperyio_body';
 
@@ -119,8 +119,9 @@ class ServerCode {
                         ApperyCollection.sendPush(pushAPIKey, JSON.stringify(messageData));
                         return {}
                     }
-                }
+                },
 
+                env: Apperyio_requestParams.env
             };
 
             var request = Apperyio.request, response = Apperyio.response;
@@ -233,7 +234,7 @@ class ServerCode {
             };
             // }}}
         """.stripIndent().trim();
-        
+
         jsSource = jsHeader + jsSource
         int nh2 = jsHeader.count('\n')
         linesInHeader = (nh1 + nh2 + 2)
@@ -292,7 +293,7 @@ class ServerCode {
      * Add dependency library to output source.
      */
     void dependency(String jsFile) {
-        jsSource += '\n// {{{ ------ ' + jsFile + '\n' + 
+        jsSource += '\n// {{{ ------ ' + jsFile + '\n' +
                     new File(jsFile + '.js').text +
                     '\n// }}}';
     }
@@ -384,7 +385,12 @@ class ServerCode {
         String errMsg = e.message
 
         console '*'*80
-        console "${ital}Error in `$jsFile` at line ${rno}:$norm"
+        if (rno>0) {
+            console "${ital}Error in `$jsFile` at line ${rno}:$norm"
+        } else {
+            console "${ital}Error in libraries of `$jsFile`:$norm"
+        }
+
         console errMsg
         console '.'*80
 
