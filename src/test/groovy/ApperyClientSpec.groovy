@@ -13,7 +13,7 @@ class ApperyClientSpec extends Specification {
   ApperyClient ac;
 
   void loginApperyBeta() {
-    checkDebuggingCredentials()
+    checkDebugCredentials()
     assert username!=null && password!=null
 
     ac = new ApperyClient()
@@ -147,7 +147,7 @@ class ApperyClientSpec extends Specification {
       println "-- `$fname` saved"
   }
 
-  void checkDebuggingCredentials() {
+  void checkDebugCredentials() {
       String auDebug = System.getenv("AU_DEBUG");
       if (auDebug==null) {
           return;
@@ -171,6 +171,20 @@ class ApperyClientSpec extends Specification {
 
     def res = ac.createApperyProject("PWA Pizza 5", PROJECT_IONIC_3_BLANK)
     saveJson(res, "build/project_create.json")    
+  }
+
+
+  // Call it with `AU_DEBUG=username:password gradle test`
+  @Ignore 
+  def "Step through ApperyClient login process"() {
+    setup:
+      checkDebugCredentials()
+      assert username!=null && password!=null
+
+      ac = new ApperyClient()
+      ApperySecurity apperySecurity = new ApperySecurity(ac);
+      apperySecurity.verbose = true;
+      apperySecurity.doLogin(username, password, "/bksrv/");
   }
 
 }

@@ -106,8 +106,12 @@ class SwaggerBuilder {
           ]);
     
         Map info = new LinkedHashMap();
-        info.put(method, serviceInfo)
-        paths.put("/${script.guid}/exec", info);
+        info.put(method, serviceInfo);
+        if (details.alias!=null) {
+            paths.put("/${details.alias}/exec", info);
+        } else {
+            paths.put("/${script.guid}/exec", info);
+        }
         console "Swagger: ${bold}${script.name}.js${norm}"
     }
     

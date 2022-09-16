@@ -39,10 +39,35 @@ jar {
 }
 
 dependencies {
-    implementation 'org.codehaus.groovy:groovy-all:3.0.9'
-    implementation 'org.apache.httpcomponents:httpclient:4.5.6'
+    implementation 'org.codehaus.groovy:groovy-all:3.0.10'
+    implementation('org.apache.httpcomponents:httpclient:4.5.13') 
+    
+    /*{
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+
+    implementation 'org.slf4j:jul-to-slf4j:1.7.36'
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
+    */
+
+    testImplementation platform("org.spockframework:spock-bom:2.1-groovy-3.0")
+    testImplementation "org.spockframework:spock-core"
+
     //compile 'com.google.code.gson:gson:2.8.0'
-    testImplementation "org.spockframework:spock-core:2.0-M4-groovy-3.0"
+}
+
+test {
+  // https://hc.apache.org/httpcomponents-client-4.5.x/logging.html  
+  environment "org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog"
+  environment "org.apache.commons.logging.simplelog.showdatetime", "true"
+  environment "org.apache.commons.logging.simplelog.log.org.apache.http", "DEBUG"
+  environment "org.apache.commons.logging.simplelog.log.org.apache.http.wire", "DEBUG"
+  environment "org.apache.commons.logging.simplelog.log.org.apache.http.impl.conn", "DEBUG"
+
+  useJUnitPlatform()
+  testLogging {
+    events "passed", "skipped", "failed"
+  }
 }
 
 /* Asciidoclet links:

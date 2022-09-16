@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -16,6 +17,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
@@ -28,7 +30,7 @@ import groovy.json.JsonSlurper;
  */
 public class ApperyRestClient {
 
-    CloseableHttpClient httpclient = HttpClients.createDefault();
+    CloseableHttpClient httpclient; 
 
     String host;
 
@@ -37,7 +39,22 @@ public class ApperyRestClient {
     JsonSlurper jsonSlurper = new JsonSlurper();
 
     ApperyRestClient() {
-		// set host
+
+        /* Specify timeout
+         */
+        boolean specifyTimeout = false;
+        if (specifyTimeout) {
+            int timeout = 5;
+            RequestConfig requestConfig = RequestConfig.custom().
+                setConnectionRequestTimeout(timeout * 1000).build();
+            System.out.println("-- requestConfig: " + requestConfig);    
+            httpclient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
+        } else {
+            httpclient = HttpClients.createDefault();
+        }
+
+        /* Allow to specify the host in the environment variable
+         */
         host = "appery.io";
         protocol = "https://";
         String envHost = System.getenv("AU_BACKEND");
@@ -79,7 +96,7 @@ public class ApperyRestClient {
             throw new ApperyUnitException("[URISyntaxException] " + e.getMessage());
         }
         req.addHeader(new BasicHeader("Accept", "application/json"));
-        req.addHeader(new BasicHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_1_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36"));
+        req.addHeader(new BasicHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.102 Safari/537.36 OPR/90.0.4480.84"));
         if (headers!=null) {
             headers.forEach((key,value) -> req.addHeader(new BasicHeader(key, value)));
         }

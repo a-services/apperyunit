@@ -22,6 +22,8 @@ public class ApperySecurity {
     String host;
     String protocol;
 
+    boolean verbose = false;
+
     ApperySecurity(ApperyClient apperyClient) {
         this.apperyClient = apperyClient;
     	this.httpclient = apperyClient.httpclient;
@@ -46,12 +48,13 @@ public class ApperySecurity {
         HttpGet request = new HttpGet(loginUrl);
         def response = httpclient.execute(request, new HttpResponseHandler());
         
-        String htmlText = response.body;
-        String samlKey = getSAMLDocumentFromPage(htmlText);
+        String samlHtml = response.body;
+        assert samlHtml.length() > 0
+        String samlKey = getSAMLDocumentFromPage(samlHtml);
         if (samlKey==null) {
         	throw new ApperyUnitException("Login error: SAML key not found");
         }
-        String targetIdpUrl = getActionEndpointURL(htmlText);
+        String targetIdpUrl = getActionEndpointURL(samlHtml);
         if (targetIdpUrl==null) {
         	throw new ApperyUnitException("Login error: target IDP URL not found");
         }
