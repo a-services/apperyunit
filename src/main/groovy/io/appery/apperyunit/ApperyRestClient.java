@@ -96,7 +96,8 @@ public class ApperyRestClient {
             throw new ApperyUnitException("[URISyntaxException] " + e.getMessage());
         }
         req.addHeader(new BasicHeader("Accept", "application/json"));
-        req.addHeader(new BasicHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.102 Safari/537.36 OPR/90.0.4480.84"));
+        //req.addHeader(new BasicHeader("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.102 Safari/537.36 OPR/90.0.4480.84"));
+        req.addHeader(new BasicHeader("User-Agent", "Appery.io Mobile Tester"));
         if (headers!=null) {
             headers.forEach((key,value) -> req.addHeader(new BasicHeader(key, value)));
         }
