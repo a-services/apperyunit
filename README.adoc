@@ -247,57 +247,57 @@ Current status can be found at the table below.
 
 [cols="m,a"]
 |===
-| link:{apperyref}#servercode-console-log[log()]  | icon:check[] supported
-| link:{apperyref}#servercode-console-time[time()] | icon:times[] not supported yet
-| link:{apperyref}#servercode-console-dir[dir()] | icon:times[] not supported yet
-| link:{apperyref}#servercode-console-assert[assert()] | icon:times[] not supported yet
-| link:{apperyref}#servercode-console-timeend[timeEnd()] | icon:times[] not supported yet
-| link:{apperyref}#servercode-console-trace[trace()] | icon:times[] not supported yet
+| link:{apperyref}/servercode-console-log[log()]  | icon:check[] supported
+| link:{apperyref}/servercode-console-time[time()] | icon:times[] not supported yet
+| link:{apperyref}/servercode-console-dir[dir()] | icon:times[] not supported yet
+| link:{apperyref}/servercode-console-assert[assert()] | icon:times[] not supported yet
+| link:{apperyref}/servercode-console-timeend[timeEnd()] | icon:times[] not supported yet
+| link:{apperyref}/servercode-console-trace[trace()] | icon:times[] not supported yet
 |===
 
 === Collection
 
 [cols="m,a"]
 |===
-| link:{apperyref}#servercode-collection-deleteobject[deleteObject()] | icon:hand-o-right[] print request parameters to console
-| link:{apperyref}#servercode-collection-multiupdateobject[multiUpdateObject()] | icon:hand-o-right[] print request parameters to console
-| link:{apperyref}#servercode-collection-getcollectionlist[getCollectionList()] | icon:check[] supported
-| link:{apperyref}#servercode-collection-distinct[distinct()] | icon:check[] supported
-| link:{apperyref}#servercode-collection-multideleteobject[multiDeleteObject()] | icon:hand-o-right[] print request parameters to console
-| link:{apperyref}#servercode-collection-updateobject[updateObject()] | icon:hand-o-right[] print request parameters to console
-| link:{apperyref}#servercode-collection-query[query()] | icon:check[] supported
-| link:{apperyref}#servercode-collection-createobject[createObject()] | icon:hand-o-right[] print request parameters to console
-| link:{apperyref}#servercode-collection-retrieveobject[retrieveObject()] | icon:check[] supported
+| link:{apperyref}/servercode-collection-deleteobject[deleteObject()] | icon:hand-o-right[] print request parameters to console
+| link:{apperyref}/servercode-collection-multiupdateobject[multiUpdateObject()] | icon:hand-o-right[] print request parameters to console
+| link:{apperyref}/servercode-collection-getcollectionlist[getCollectionList()] | icon:check[] supported
+| link:{apperyref}/servercode-collection-distinct[distinct()] | icon:check[] supported
+| link:{apperyref}/servercode-collection-multideleteobject[multiDeleteObject()] | icon:hand-o-right[] print request parameters to console
+| link:{apperyref}/servercode-collection-updateobject[updateObject()] | icon:hand-o-right[] print request parameters to console
+| link:{apperyref}/servercode-collection-query[query()] | icon:check[] supported
+| link:{apperyref}/servercode-collection-createobject[createObject()] | icon:hand-o-right[] print request parameters to console
+| link:{apperyref}/servercode-collection-retrieveobject[retrieveObject()] | icon:check[] supported
 |===
 
 === DatabaseUser
 
 [cols="m,a"]
 |===
-| link:{apperyref}#servercode-databaseuser-logout[logout()] | icon:times[] not supported yet
-| link:{apperyref}#servercode-databaseuser-update[update()] | icon:hand-o-right[] print request parameters to console
-| link:{apperyref}#servercode-databaseuser-retrieve[retrieve()] | icon:check[] supported
-| link:{apperyref}#servercode-databaseuser-signup[signUp()] | icon:hand-o-right[] print request parameters to console
-| link:{apperyref}#servercode-databaseuser-login[login()] | icon:check[] supported
-| link:{apperyref}#servercode-databaseuser-query[query()] | icon:check[] supported
-| link:{apperyref}#servercode-databaseuser-remove[remove()] | icon:times[] not supported yet
+| link:{apperyref}/servercode-databaseuser-logout[logout()] | icon:times[] not supported yet
+| link:{apperyref}/servercode-databaseuser-update[update()] | icon:hand-o-right[] print request parameters to console
+| link:{apperyref}/servercode-databaseuser-retrieve[retrieve()] | icon:check[] supported
+| link:{apperyref}/servercode-databaseuser-signup[signUp()] | icon:hand-o-right[] print request parameters to console
+| link:{apperyref}/servercode-databaseuser-login[login()] | icon:check[] supported
+| link:{apperyref}/servercode-databaseuser-query[query()] | icon:check[] supported
+| link:{apperyref}/servercode-databaseuser-remove[remove()] | icon:times[] not supported yet
 |===
 
 === Push Notifications
 
 [cols="m,a"]
 |===
-| link:{apperyref}#servercode-push-notifications-send[send()] | icon:hand-o-right[] print request parameters to console
-| link:{apperyref}#servercode-push-notifications-listscheduled[listScheduled()] | icon:times[] not supported yet
-| link:{apperyref}#servercode-push-notifications-deletescheduled[deleteScheduled()] | icon:times[] not supported yet
+| link:{apperyref}/servercode-push-notifications-send[send()] | icon:hand-o-right[] print request parameters to console
+| link:{apperyref}/servercode-push-notifications-listscheduled[listScheduled()] | icon:times[] not supported yet
+| link:{apperyref}/servercode-push-notifications-deletescheduled[deleteScheduled()] | icon:times[] not supported yet
 |===
 
 === XHR
 
 [cols="m,a"]
 |===
-| link:{apperyref}#servercode-xhr-send[send('GET')] | icon:check[] supported
-| link:{apperyref}#servercode-xhr-send[send('POST')] | icon:hand-o-right[] print request parameters to console
+| link:{apperyref}/servercode-xhr-send[send('GET')] | icon:check[] supported
+| link:{apperyref}/servercode-xhr-send[send('POST')] | icon:hand-o-right[] print request parameters to console
 |===
 
 ++++
